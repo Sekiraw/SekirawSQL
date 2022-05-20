@@ -59,6 +59,7 @@ def create_doc(argument, rules):
     db, doc = get_loc(argument)
     if check_argument_rules(argument):
         return
+
     try:
         f = open(cons.db_folder + db + "/" + doc + ".ini", "w")
         f.write("")
@@ -82,6 +83,7 @@ def delete_doc(argument):
     db, doc = get_loc(argument)
     if check_argument_rules(argument):
         return
+
     if os.path.exists(cons.db_folder + db + "/" + doc + ".ini"):
         os.remove(cons.db_folder + db + "/" + doc + ".ini")
         os.remove(cons.db_folder + db + "/" + doc + "_id.ini")
@@ -311,6 +313,7 @@ def operator_handler(operator, list, aoi, value):
     return res
 
 
+# convert the list to the unique system that the database uses
 def datafy_list(list):
     string = str(list).replace("'", "")
     string = str(string).replace("[]", "")

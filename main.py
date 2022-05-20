@@ -8,6 +8,7 @@ if __name__ == '__main__':
     # db.create_database("school")
     # db.delete_database("asd")
 
+    # create a document, the second argument is the rules
     # id field should always be given
     # doc.create_doc("CRDOC teachers INDB school", "id: int, name: string, age: int")
     # doc.delete_doc("DLDOC teachers INDB school")
@@ -22,11 +23,12 @@ if __name__ == '__main__':
     # doc.add("Cica,18 INDB school INTO students")
 
     # returns the results as a list in list
+    # the operators should be in between two questionmarks like >= should be ?>=?
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
-    # print(doc.get("INDB school FROM students WHERE name?==?Pablo"))
+    print(doc.get("INDB school FROM students WHERE name?!=?Horez"))
 
-    doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Filip")
+    # doc.update("INDB school INTO students UPDATE name WHERE id?>=?3 TO Mike")
 
     # doc.delete("WHERE name?==?Pablo INDB school FROM students")
 
