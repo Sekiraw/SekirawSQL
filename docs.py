@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 import constants as cons
 
 
@@ -22,10 +24,15 @@ def get_loc(arg):
         print("Something went wrong")
         return
 
-    return db, doc
+    # check if file exists
+    location = Path(cons.db_folder + "/" + db + "/" + doc + ".ini")
+    if location.exists():
+        return db, doc
+    else:
+        print("Cannot find document.")
 
 
-def operator_handler(arg):
+def operator_reader(arg):
     arg = arg.split(" ")
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
@@ -35,8 +42,23 @@ def operator_handler(arg):
     return
 
 
+def update_to(arg):
+    arg = arg.split(" ")
+    up_to = ""
+    field_up_to = ""
+    for i in range(len(arg)):
+        if arg[i] == "TO":
+            up_to = arg[i+1]
+        if arg[i] == "UPDATE":
+            field_up_to = arg[i+1]
+
+    return up_to, field_up_to
+
+
 def create_doc(argument, rules):
     db, doc = get_loc(argument)
+    if check_argument_rules(argument):
+        return
     try:
         f = open(cons.db_folder + db + "/" + doc + ".ini", "w")
         f.write("")
@@ -58,6 +80,8 @@ def create_doc_rules(db, doc, rules):
 
 def delete_doc(argument):
     db, doc = get_loc(argument)
+    if check_argument_rules(argument):
+        return
     if os.path.exists(cons.db_folder + db + "/" + doc + ".ini"):
         os.remove(cons.db_folder + db + "/" + doc + ".ini")
         os.remove(cons.db_folder + db + "/" + doc + "_id.ini")
@@ -69,6 +93,8 @@ def delete_doc(argument):
 
 def add(argument):
     db, doc = get_loc(argument)
+    if check_argument_rules(argument):
+        return
     arg = argument.split(" ")
     # check the rules first
     f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
@@ -105,7 +131,10 @@ def add(argument):
 
 def get(argument):
     db, doc = get_loc(argument)
-    op_res = operator_handler(argument)
+    if check_argument_rules(argument):
+        return
+
+    op_res = operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
     operator = op_res[1]
@@ -133,38 +162,169 @@ def get(argument):
     # print(ls)
     # print(len(ls))
 
-    res = []
-
-    if operator == "==":
-        for i in range(len(ls)-1):
-            if str(ls[i][aoi]) == str(value):
-                res.append(list(ls[i]))
-    elif operator == "!=":
-        for i in range(len(ls)-1):
-            if str(ls[i][aoi]) != str(value):
-                res.append(list(ls[i]))
-    elif operator == ">":
-        for i in range(len(ls)-1):
-            if ls[i][aoi] > str(value):
-                res.append(list(ls[i]))
-    elif operator == "<":
-        for i in range(len(ls)-1):
-            if ls[i][aoi] < str(value):
-                res.append(list(ls[i]))
-    elif operator == ">=":
-        for i in range(len(ls)-1):
-            if ls[i][aoi] >= str(value):
-                res.append(list(ls[i]))
-    elif operator == "<=":
-        for i in range(len(ls)-1):
-            if ls[i][aoi] <= str(value):
-                res.append(list(ls[i]))
+    res = operator_handler(operator, ls, aoi, value)
 
     return res
 
 
+def update(argument):
+    db, doc = get_loc(argument)
+    if check_argument_rules(argument):
+        return
+
+    op_res = operator_reader(argument)
+    op_res = op_res.split("?")
+    up_to, field_up_to = update_to(argument)
+    field = op_res[0]
+    operator = op_res[1]
+    value = op_res[2]
+
+    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "r")
+    data = f.read().split(';')
+    f.close()
+    # print(op_res)
+    f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
+    rules = f.read()
+    f.close()
+    rules = rules.split(", ")
+    aoi = 0
+    a_to_up = 0
+    for i in range(len(rules)):
+        if str(field) in str(rules[i]):
+            aoi = i
+
+    for i in range(len(rules)):
+        if str(field_up_to) in str(rules[i]):
+            a_to_up = i
+
+    # print(aoi)
+    # print(a_to_up)
+    ls = []
+    # convert the string lists into lists
+    for i in range(len(data)):
+        ls.append(data[i].strip('][').split(', '))
+
+    # print(ls)
+    # print(len(ls))
+
+    if operator == "==":
+        for i in range(len(ls) - 1):
+            if str(ls[i][aoi]) == str(value):
+                ls[i][a_to_up] = up_to
+
+    # convert list to the unique string that the db uses
+    data_back = datafy_list(ls)
+    # print(data_back)
+    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
+    f.write(data_back)
+    f.close()
+    # print(data_back)
+    print("Updated successfully!")
+
+
+def delete(argument):
+    db, doc = get_loc(argument)
+    if check_argument_rules(argument):
+        return
+
+    op_res = operator_reader(argument)
+    op_res = op_res.split("?")
+    field = op_res[0]
+    operator = op_res[1]
+    value = op_res[2]
+
+    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "r")
+    data = f.read().split(';')
+    f.close()
+    # print(op_res)
+    f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
+    rules = f.read()
+    f.close()
+    rules = rules.split(", ")
+    aoi = 0
+    for i in range(len(rules)):
+        if str(field) in str(rules[i]):
+            aoi = i
+
+    # print(aoi)
+    # print(a_to_up)
+    ls = []
+    # convert the string lists into lists
+    for i in range(len(data)):
+        ls.append(data[i].strip('][').split(', '))
+
+    # print(ls)
+    # print(len(ls))
+
+    values_to_delete = operator_handler(operator, ls, aoi, value)
+
+    # skip the elements that are the same
+    res = []
+
+    for i in range(len(ls)):
+        if ls[i] not in values_to_delete:
+            res.append(ls[i])
+
+    res = datafy_list(res)
+
+    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
+    f.write(res)
+    f.close()
+    # print(data_back)
+    print("Deleted successfully!")
+
+
 def get_rules(argument):
     db, doc = get_loc(argument)
-    f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
+    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "r")
     print(f.read())
     f.close()
+
+
+def operator_handler(operator, list, aoi, value):
+    res = []
+    if operator == "==":
+        for i in range(len(list) - 1):
+            if str(list[i][aoi]) == str(value):
+                res.append(list[i])
+    elif operator == "!=":
+        for i in range(len(list)-1):
+            if str(list[i][aoi]) != str(value):
+                res.append(list[i])
+    elif operator == ">":
+        for i in range(len(list)-1):
+            if list[i][aoi] > str(value):
+                res.append(list[i])
+    elif operator == "<":
+        for i in range(len(list)-1):
+            if list[i][aoi] < str(value):
+                res.append(list[i])
+    elif operator == ">=":
+        for i in range(len(list)-1):
+            if list[i][aoi] >= str(value):
+                res.append(list[i])
+    elif operator == "<=":
+        for i in range(len(list)-1):
+            if list[i][aoi] <= str(value):
+                res.append(list[i])
+
+    return res
+
+
+def datafy_list(list):
+    string = str(list).replace("'", "")
+    string = str(string).replace("[]", "")
+    string = str(string).replace("],", "];")
+    string = str(string).replace("; ", ";")
+    string = string[1:]
+    string = string[:-1]
+    return string
+
+
+def check_argument_rules(argument):
+    for i in range(len(argument)):
+        if argument[i] in cons.banned_characters:
+            print("Banned character found")
+            return True
+
+    return False

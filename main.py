@@ -8,6 +8,7 @@ if __name__ == '__main__':
     # db.create_database("school")
     # db.delete_database("asd")
 
+    # id field should always be given
     # doc.create_doc("CRDOC teachers INDB school", "id: int, name: string, age: int")
     # doc.delete_doc("DLDOC teachers INDB school")
 
@@ -23,12 +24,16 @@ if __name__ == '__main__':
     # returns the results as a list in list
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
-    # print(doc.get("INDB school FROM students WHERE name?!=?Pablo"))
+    # print(doc.get("INDB school FROM students WHERE name?==?Pablo"))
+
+    doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Filip")
+
+    # doc.delete("WHERE name?==?Pablo INDB school FROM students")
 
     # example
-    names = ["FenellaBuxton", "AdnaanSquires", "VincenzoBlankenship", "CarloBaird", "MacPayne", "KomalGoodman"]
-    auth = "admin"
-    age = 0
-    for i in range(6):
-        age = random.randint(20, 50)
-        doc.add(str(names[i]) + "," + str(age) + "," + str(auth) + " INDB users INTO admins")
+    # names = ["FenellaBuxton", "AdnaanSquires", "VincenzoBlankenship", "CarloBaird", "MacPayne", "KomalGoodman"]
+    # auth = "admin"
+    # age = 0
+    # for i in range(6):
+    #     age = random.randint(20, 50)
+    #     doc.add(str(names[i]) + "," + str(age) + "," + str(auth) + " INDB users INTO admins")
