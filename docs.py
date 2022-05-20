@@ -2,6 +2,7 @@ import os
 import constants as cons
 
 
+# finds and returns the location of the given database and document
 def get_loc(arg):
     db = ""
     doc = ""
@@ -90,6 +91,8 @@ def add(argument):
     id = f.read()
     f.close()
     data.insert(0, int(id)+1)
+    data = str(data).replace("'", "")
+    print(data)
 
     f = open(cons.db_folder + "/" + db + "/" + doc + "_id.ini", "w")
     f.write(str(int(id)+1))
@@ -109,9 +112,9 @@ def get(argument):
     value = op_res[2]
 
     f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "r")
-    data = f.read().split(";")
+    data = f.read().split(';')
     f.close()
-    print(op_res)
+    # print(op_res)
     f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
     rules = f.read()
     f.close()
@@ -121,18 +124,47 @@ def get(argument):
         if str(field) in str(rules[i]):
             aoi = i
 
-    print(aoi)
+    # print(aoi)
+    ls = []
+    # convert the string lists into lists
+    for i in range(len(data)):
+        ls.append(data[i].strip('][').split(', '))
 
-    # num_str = ""
-    #
-    # if operator == "==":
-    #     num_str += data[aoi][1]
-    #     if data[aoi][2].isnumeric():
-    #         num_str += data[aoi][2]
-    #
-    #     print(num_str)
-    #
-    # for i in range(len(data)):
-    #     print(list(data[i][2]))
-    #     if data[i] == int(value):
-    #         print("a")
+    # print(ls)
+    # print(len(ls))
+
+    res = []
+
+    if operator == "==":
+        for i in range(len(ls)-1):
+            if str(ls[i][aoi]) == str(value):
+                res.append(list(ls[i]))
+    elif operator == "!=":
+        for i in range(len(ls)-1):
+            if str(ls[i][aoi]) != str(value):
+                res.append(list(ls[i]))
+    elif operator == ">":
+        for i in range(len(ls)-1):
+            if ls[i][aoi] > str(value):
+                res.append(list(ls[i]))
+    elif operator == "<":
+        for i in range(len(ls)-1):
+            if ls[i][aoi] < str(value):
+                res.append(list(ls[i]))
+    elif operator == ">=":
+        for i in range(len(ls)-1):
+            if ls[i][aoi] >= str(value):
+                res.append(list(ls[i]))
+    elif operator == "<=":
+        for i in range(len(ls)-1):
+            if ls[i][aoi] <= str(value):
+                res.append(list(ls[i]))
+
+    return res
+
+
+def get_rules(argument):
+    db, doc = get_loc(argument)
+    f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
+    print(f.read())
+    f.close()
