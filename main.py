@@ -18,17 +18,20 @@ if __name__ == '__main__':
 
     # adds a list to the document with the selected values, the rules have to match
     # it ignores the values that are out of the range of the rules
-    # so if I would give it Cica,22,54 <- the 54 couldn't be used
+    # If you give True to the second parameter it just runs a test, if it can be added or not
+    # You don't have to give second parameter
     # The input field doest like spaces so "Kis Cica" should be "KisCica" will fix it later
+    # doc.add("Cica,18,Jojo INDB school INTO students", True)
     # doc.add("Cica,18 INDB school INTO students")
 
     # returns the results as a list in list
     # the operators should be in between two questionmarks like >= should be ?>=?
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
-    print(doc.get("INDB school FROM students WHERE name?!=?Horez"))
+    # AND operator can be used once (for now)
+    print(doc.get("INDB school FROM students WHERE age?>=?19 AND id?>?2"))
 
-    # doc.update("INDB school INTO students UPDATE name WHERE id?>=?3 TO Mike")
+    # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
     # doc.delete("WHERE name?==?Pablo INDB school FROM students")
 

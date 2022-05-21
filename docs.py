@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 from pathlib import Path
 
 import constants as cons
@@ -34,12 +35,19 @@ def get_loc(arg):
 
 def operator_reader(arg):
     arg = arg.split(" ")
+    where = ""
+    andd = ""
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
-            return arg[i+1]
+            where = arg[i+1]
+        if "AND" in arg[i]:
+            andd = arg[i+1]
 
-    print("Error, operator was not found!")
-    return
+    if where == "":
+        print("Error, operator was not found!")
+        return
+    else:
+        return where, andd
 
 
 def update_to(arg):
@@ -93,7 +101,7 @@ def delete_doc(argument):
         print("The document does not exist")
 
 
-def add(argument):
+def add(argument, test_run=False):
     db, doc = get_loc(argument)
     if check_argument_rules(argument):
         return
@@ -113,6 +121,10 @@ def add(argument):
             if not data[i].isnumeric():
                 print("Inserted value doesn't match the rules")
                 return
+            if len(data) != len(rules):
+                print("Given values doesn't match the rules")
+                print("Rules: ", rules)
+                return
     print("Rules match! Inserting data.")
 
     f = open(cons.db_folder + "/" + db + "/" + doc + "_id.ini", "r")
@@ -122,13 +134,14 @@ def add(argument):
     data = str(data).replace("'", "")
     print(data)
 
-    f = open(cons.db_folder + "/" + db + "/" + doc + "_id.ini", "w")
-    f.write(str(int(id)+1))
-    f.close()
+    if not test_run:
+        f = open(cons.db_folder + "/" + db + "/" + doc + "_id.ini", "w")
+        f.write(str(int(id)+1))
+        f.close()
 
-    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "a+")
-    f.write(str(data) + ";")
-    f.close()
+        f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "a+")
+        f.write(str(data) + ";")
+        f.close()
 
 
 def get(argument):
@@ -136,7 +149,7 @@ def get(argument):
     if check_argument_rules(argument):
         return
 
-    op_res = operator_reader(argument)
+    op_res, second = operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
     operator = op_res[1]
@@ -166,10 +179,26 @@ def get(argument):
 
     res = operator_handler(operator, ls, aoi, value)
 
-    return res
+    # second query if there is an AND in the argument
+    if second != "":
+        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
+        merged = res + second_get
+        merged.sort()
+        # method for keeping only the multiples
+        n_res = []
+        aux = 0
+        aux2 = 0
+        for i in merged:
+            aux2 = i
+            if (aux2 == aux):
+                n_res.append(i)
+            aux = i
+        return n_res
+    else:
+        return res
 
 
-def update(argument):
+def update(argument, test_run=False):
     db, doc = get_loc(argument)
     if check_argument_rules(argument):
         return
@@ -217,14 +246,15 @@ def update(argument):
     # convert list to the unique string that the db uses
     data_back = datafy_list(ls)
     # print(data_back)
-    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
-    f.write(data_back)
-    f.close()
+    if not test_run:
+        f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
+        f.write(data_back)
+        f.close()
     # print(data_back)
     print("Updated successfully!")
 
 
-def delete(argument):
+def delete(argument, test_run=False):
     db, doc = get_loc(argument)
     if check_argument_rules(argument):
         return
@@ -269,9 +299,10 @@ def delete(argument):
 
     res = datafy_list(res)
 
-    f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
-    f.write(res)
-    f.close()
+    if not test_run:
+        f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
+        f.write(res)
+        f.close()
     # print(data_back)
     print("Deleted successfully!")
 
