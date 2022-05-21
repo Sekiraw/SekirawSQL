@@ -31,6 +31,7 @@ def get_loc(arg):
         return db, doc
     else:
         print("Cannot find document.")
+        return db, doc
 
 
 def operator_reader(arg):
@@ -142,6 +143,9 @@ def add(argument, test_run=False):
         f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "a+")
         f.write(str(data) + ";")
         f.close()
+    else:
+        print("No errors were found.")
+        print("Test was successful!")
 
 
 def get(argument):
@@ -163,10 +167,14 @@ def get(argument):
     rules = f.read()
     f.close()
     rules = rules.split(", ")
-    aoi = 0
+    aoi = -1
     for i in range(len(rules)):
         if str(field) in str(rules[i]):
             aoi = i
+
+    if aoi == -1:
+        print("Field " + str(field) + " was not found in rules!")
+        return
 
     # print(aoi)
     ls = []
@@ -203,7 +211,7 @@ def update(argument, test_run=False):
     if check_argument_rules(argument):
         return
 
-    op_res = operator_reader(argument)
+    op_res, second = operator_reader(argument)
     op_res = op_res.split("?")
     up_to, field_up_to = update_to(argument)
     field = op_res[0]
@@ -218,15 +226,23 @@ def update(argument, test_run=False):
     rules = f.read()
     f.close()
     rules = rules.split(", ")
-    aoi = 0
-    a_to_up = 0
+    aoi = -1
+    a_to_up = -1
     for i in range(len(rules)):
         if str(field) in str(rules[i]):
             aoi = i
 
+    if aoi == -1:
+        print("Field " + str(field) + " was not found in rules!")
+        return
+
     for i in range(len(rules)):
         if str(field_up_to) in str(rules[i]):
             a_to_up = i
+
+    if a_to_up == -1:
+        print("Field was not found in rules!")
+        return
 
     # print(aoi)
     # print(a_to_up)
@@ -250,8 +266,11 @@ def update(argument, test_run=False):
         f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
         f.write(data_back)
         f.close()
+        print("Updated successfully!")
+    else:
+        print("No errors were found.")
+        print("Test was successful!")
     # print(data_back)
-    print("Updated successfully!")
 
 
 def delete(argument, test_run=False):
@@ -259,7 +278,7 @@ def delete(argument, test_run=False):
     if check_argument_rules(argument):
         return
 
-    op_res = operator_reader(argument)
+    op_res, second = operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
     operator = op_res[1]
@@ -273,10 +292,14 @@ def delete(argument, test_run=False):
     rules = f.read()
     f.close()
     rules = rules.split(", ")
-    aoi = 0
+    aoi = -1
     for i in range(len(rules)):
         if str(field) in str(rules[i]):
             aoi = i
+
+    if aoi == -1:
+        print("Field " + str(field) + " was not found in rules!")
+        return
 
     # print(aoi)
     # print(a_to_up)
@@ -303,8 +326,11 @@ def delete(argument, test_run=False):
         f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
         f.write(res)
         f.close()
+        print("Deleted successfully!")
+    else:
+        print("No errors were found.")
+        print("Test was successful!")
     # print(data_back)
-    print("Deleted successfully!")
 
 
 def get_rules(argument):

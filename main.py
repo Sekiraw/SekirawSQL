@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
     # AND operator can be used once (for now)
-    print(doc.get("INDB school FROM students WHERE age?>=?19 AND id?>?2"))
+    print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
@@ -41,4 +41,4 @@ if __name__ == '__main__':
     # age = 0
     # for i in range(6):
     #     age = random.randint(20, 50)
-    #     doc.add(str(names[i]) + "," + str(age) + "," + str(auth) + " INDB users INTO admins")
+    #     doc.add(str(names[i]) + "," + str(age) + "," + str(auth) + " INDB company INTO admins")
