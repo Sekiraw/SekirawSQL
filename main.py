@@ -21,15 +21,16 @@ if __name__ == '__main__':
     # If you give True to the second parameter it just runs a test, if it can be added or not
     # You don't have to give second parameter
     # The input field doest like spaces so "Kis Cica" should be "KisCica" will fix it later
-    # doc.add("Cica,18,Jojo INDB school INTO students", True)
+    # doc.add("Cica Mica,18,Jojo INDB school INTO students", True)
     # doc.add("Cica,18 INDB school INTO students")
 
     # returns the results as a list in list
     # the operators should be in between two questionmarks like >= should be ?>=?
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
-    # AND operator can be used once (for now)
-    print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5"))
+    # AND operator can be used more than once
+    # print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5"))
+    print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5 AND name?==?Filip"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
