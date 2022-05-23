@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
     # AND operator can be used more than once
-    # print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5"))
+    # doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age")
     print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5 AND name?==?Filip"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")

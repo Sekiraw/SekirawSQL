@@ -78,6 +78,16 @@ def operator_reader(arg):
         return where, andd
 
 
+def sort_operator_reader(argument):
+    parameter = ""
+    arg = argument.split(" ")
+    for i in range(len(arg)):
+        if arg[i] == "ORDER" and arg[i+1] == "BY":
+            parameter = arg[i+2]
+
+    return parameter
+
+
 def operator_handler(operator, list, aoi, value):
     res = []
     if operator == "==":

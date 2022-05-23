@@ -86,8 +86,9 @@ def get(argument):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
         return
-
+    order = ""
     op_res, second = pf.operator_reader(argument)
+    order = pf.sort_operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
     operator = op_res[1]
@@ -102,9 +103,13 @@ def get(argument):
     f.close()
     rules = rules.split(", ")
     aoi = -1
+    aoi_order = -1
     for i in range(len(rules)):
         if str(field) in str(rules[i]):
             aoi = i
+        if order != "":
+            if str(order) in str(rules[i]):
+                aoi_order = i
 
     if aoi == -1:
         print("Field " + str(field) + " was not found in rules!")
@@ -123,7 +128,10 @@ def get(argument):
 
     # second query if there is an AND in the argument
     if second != "":
-        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
+        if order != "":
+            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
+        else:
+            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order)
         merged = res + second_get
         merged.sort()
         # method for keeping only the multiples
@@ -135,8 +143,22 @@ def get(argument):
             if (aux2 == aux):
                 n_res.append(i)
             aux = i
+
         return n_res
     else:
+        # if order != "":
+        #     order_ls = []
+        #     while len(order_ls) != len(res):
+        #         curr_min = []
+        #         for i in range(len(res)):
+        #             curr_min = res[i]
+        #             if res[i][aoi_order] <= curr_min[aoi_order]:
+        #                 if curr_min not in order_ls:
+        #                     curr_min = res[i]
+        #             # print(min)
+        #             order_ls.append(curr_min)
+        #     print(order_ls)
+
         return res
 
 
