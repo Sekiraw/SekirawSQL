@@ -80,12 +80,33 @@ def operator_reader(arg):
 
 def sort_operator_reader(argument):
     parameter = ""
+    desc = False
+    asc = ""
     arg = argument.split(" ")
     for i in range(len(arg)):
         if arg[i] == "ORDER" and arg[i+1] == "BY":
             parameter = arg[i+2]
+        if arg[-1] == "DESC":
+            desc = True
 
-    return parameter
+    return parameter, desc
+
+
+def unique_sorter(ls, aoi, res, rev=False):
+    if len(ls) == 0:
+        if rev:
+            res.reverse()
+            return res
+        return res
+
+    min = ls[-1]
+    for i in range(len(ls)):
+        if ls[i][aoi] < min[aoi]:
+            min = ls[i]
+
+    res.append(min)
+    ls.remove(min)
+    return unique_sorter(ls, aoi, res, rev)
 
 
 def operator_handler(operator, list, aoi, value):

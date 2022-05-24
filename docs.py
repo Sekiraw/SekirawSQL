@@ -88,7 +88,7 @@ def get(argument):
         return
     order = ""
     op_res, second = pf.operator_reader(argument)
-    order = pf.sort_operator_reader(argument)
+    order, is_desc = pf.sort_operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
     operator = op_res[1]
@@ -146,18 +146,9 @@ def get(argument):
 
         return n_res
     else:
-        # if order != "":
-        #     order_ls = []
-        #     while len(order_ls) != len(res):
-        #         curr_min = []
-        #         for i in range(len(res)):
-        #             curr_min = res[i]
-        #             if res[i][aoi_order] <= curr_min[aoi_order]:
-        #                 if curr_min not in order_ls:
-        #                     curr_min = res[i]
-        #             # print(min)
-        #             order_ls.append(curr_min)
-        #     print(order_ls)
+        if order != "":
+            l = []
+            res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
 
         return res
 

@@ -29,8 +29,12 @@ if __name__ == '__main__':
     # print(doc.get("INDB school FROM students WHERE age?>?21"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
     # AND operator can be used more than once
-    # doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age")
-    print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5 AND name?==?Filip"))
+    # print(doc.get("INDB school FROM students WHERE age?>=?18 AND id?>?3"))
+    # print(doc.get("INDB school FROM students WHERE age?>=?22 AND id?<?5 AND name?==?Filip"))
+
+    # if you give a DESC keyword at the END of the argument it gives it back descending else ascending
+    # it doesn't work on strings like names etc...
+    print(doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age DESC"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
