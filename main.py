@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # You don't have to give second parameter
     # The input field doest like spaces so "Kis Cica" should be "KisCica" will fix it later
     # doc.add("Cica Mica,18,Jojo INDB school INTO students", True)
-    # doc.add("Cica,18 INDB school INTO students")
+    # doc.add("Cica,18 INDB school INTO students", True)
 
     # returns the results as a list in list
     # the operators should be in between two questionmarks like >= should be ?>=?
@@ -34,7 +34,8 @@ if __name__ == '__main__':
 
     # if you give a DESC keyword at the END of the argument it gives it back descending else ascending
     # it doesn't work on strings like names etc...
-    print(doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age DESC"))
+    # print(doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age DESC"))
+    print(doc.get("INDB school FROM students WHERE age?>=?18 AND age?<=?21 ORDER BY age DESC"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 

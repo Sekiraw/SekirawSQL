@@ -81,7 +81,6 @@ def operator_reader(arg):
 def sort_operator_reader(argument):
     parameter = ""
     desc = False
-    asc = ""
     arg = argument.split(" ")
     for i in range(len(arg)):
         if arg[i] == "ORDER" and arg[i+1] == "BY":
@@ -92,6 +91,7 @@ def sort_operator_reader(argument):
     return parameter, desc
 
 
+# had to make it recursive, sorry memory
 def unique_sorter(ls, aoi, res, rev=False):
     if len(ls) == 0:
         if rev:

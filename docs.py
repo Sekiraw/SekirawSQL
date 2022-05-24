@@ -55,11 +55,10 @@ def add(argument, test_run=False):
         if "int" in rules[i]:
             if not data[i].isnumeric():
                 print("Inserted value doesn't match the rules")
-                return
+                return "Inserted value doesn't match the rules"
             if len(data) != len(rules):
-                print("Given values doesn't match the rules")
-                print("Rules: ", rules)
-                return
+                print("Given values doesn't match the rules" + "\nRules: " + str(rules))
+                return "Given values doesn't match the rules" + "\nRules: " + str(rules)
     print("Rules match! Inserting data.")
 
     f = open(cons.db_folder + "/" + db + "/" + doc + "_id.ini", "r")
@@ -78,8 +77,8 @@ def add(argument, test_run=False):
         f.write(str(data) + ";")
         f.close()
     else:
-        print("No errors were found.")
-        print("Test was successful!")
+        print("No errors were found. Test was successful!")
+        return "No errors were found. Test was successful!"
 
 
 def get(argument):
@@ -94,16 +93,18 @@ def get(argument):
     operator = op_res[1]
     value = op_res[2]
 
+    # open and read the doc
     f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "r")
     data = f.read().split(';')
     f.close()
     # print(op_res)
+    # open and read the rules
     f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
     rules = f.read()
     f.close()
     rules = rules.split(", ")
     aoi = -1
-    aoi_order = -1
+    aoi_order = -1 if order != "" else -2
     for i in range(len(rules)):
         if str(field) in str(rules[i]):
             aoi = i
@@ -111,9 +112,11 @@ def get(argument):
             if str(order) in str(rules[i]):
                 aoi_order = i
 
+    # if aoi kept -1, that means there was no field in the rules that was given
     if aoi == -1:
-        print("Field " + str(field) + " was not found in rules!")
-        return
+        return "Field '" + str(field) + "' was not found in rules!"
+    elif aoi_order == -1:
+        return "Field '" + str(order) + "' was not found in rules!"
 
     # print(aoi)
     ls = []
@@ -128,10 +131,13 @@ def get(argument):
 
     # second query if there is an AND in the argument
     if second != "":
-        if order != "":
+        if order == "":
             second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
         else:
-            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order)
+            desc = ""
+            if is_desc:
+                desc = " DESC"
+            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
         merged = res + second_get
         merged.sort()
         # method for keeping only the multiples
@@ -144,12 +150,16 @@ def get(argument):
                 n_res.append(i)
             aux = i
 
+        if order != "":
+            l = []
+            res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
+            return res
         return n_res
     else:
+        # if ORDER BY was found in the argument
         if order != "":
             l = []
             res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
-
         return res
 
 
@@ -180,16 +190,14 @@ def update(argument, test_run=False):
             aoi = i
 
     if aoi == -1:
-        print("Field " + str(field) + " was not found in rules!")
-        return
+        return "Field '" + str(field) + "' was not found in rules!"
 
     for i in range(len(rules)):
         if str(field_up_to) in str(rules[i]):
             a_to_up = i
 
     if a_to_up == -1:
-        print("Field was not found in rules!")
-        return
+        return "Field '" + str(field_up_to) + "' was not found in rules!"
 
     # print(aoi)
     # print(a_to_up)
@@ -248,8 +256,7 @@ def delete(argument, test_run=False):
             aoi = i
 
     if aoi == -1:
-        print("Field " + str(field) + " was not found in rules!")
-        return
+        return "Field '" + str(field) + "' was not found in rules!"
 
     # print(aoi)
     # print(a_to_up)
