@@ -7,7 +7,7 @@ import private_func as pf
 def create_doc(argument, rules):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
 
     try:
         f = open(cons.db_folder + db + "/" + doc + ".ini", "w")
@@ -25,7 +25,7 @@ def create_doc(argument, rules):
 def delete_doc(argument):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
 
     if os.path.exists(cons.db_folder + db + "/" + doc + ".ini"):
         os.remove(cons.db_folder + db + "/" + doc + ".ini")
@@ -39,7 +39,7 @@ def delete_doc(argument):
 def add(argument, test_run=False):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
     arg = argument.split(" ")
     # check the rules first
     f = open(cons.db_folder + "/" + db + "/" + doc + "_rules.ini", "r")
@@ -84,7 +84,7 @@ def add(argument, test_run=False):
 def get(argument):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
     order = ""
     op_res, second = pf.operator_reader(argument)
     order, is_desc = pf.sort_operator_reader(argument)
@@ -131,24 +131,7 @@ def get(argument):
 
     # second query if there is an AND in the argument
     if second != "":
-        if order == "":
-            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
-        else:
-            desc = ""
-            if is_desc:
-                desc = " DESC"
-            second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
-        merged = res + second_get
-        merged.sort()
-        # method for keeping only the multiples
-        n_res = []
-        aux = 0
-        aux2 = 0
-        for i in merged:
-            aux2 = i
-            if (aux2 == aux):
-                n_res.append(i)
-            aux = i
+        n_res = pf.and_arg(db, doc, order, second, is_desc, res, get)
 
         if order != "":
             l = []
@@ -166,7 +149,7 @@ def get(argument):
 def update(argument, test_run=False):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
 
     op_res, second = pf.operator_reader(argument)
     op_res = op_res.split("?")
@@ -209,6 +192,7 @@ def update(argument, test_run=False):
     # print(ls)
     # print(len(ls))
 
+    # have to update for more operators
     if operator == "==":
         for i in range(len(ls) - 1):
             if str(ls[i][aoi]) == str(value):
@@ -231,7 +215,7 @@ def update(argument, test_run=False):
 def delete(argument, test_run=False):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
-        return
+        return cons.banned_error
 
     op_res, second = pf.operator_reader(argument)
     op_res = op_res.split("?")

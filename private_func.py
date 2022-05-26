@@ -109,31 +109,56 @@ def unique_sorter(ls, aoi, res, rev=False):
     return unique_sorter(ls, aoi, res, rev)
 
 
+def and_arg(db, doc, order, second, is_desc, res, get):
+    if order == "":
+        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
+    else:
+        desc = ""
+        if is_desc:
+            desc = " DESC"
+        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
+    merged = res + second_get
+    merged.sort()
+    # method for keeping only the multiples
+    n_res = []
+    aux = 0
+    aux2 = 0
+    for i in merged:
+        aux2 = i
+        if (aux2 == aux):
+            n_res.append(i)
+        aux = i
+
+    return n_res
+
+
 def operator_handler(operator, list, aoi, value):
     res = []
+    num = value.isnumeric()
     if operator == "==":
         for i in range(len(list) - 1):
-            if str(list[i][aoi]) == str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) == (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == "!=":
         for i in range(len(list)-1):
-            if str(list[i][aoi]) != str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) != (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == ">":
         for i in range(len(list)-1):
-            if list[i][aoi] > str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) > (str(value) if not num else int(value)):
+                # print(list[i][aoi], ">", value)
                 res.append(list[i])
     elif operator == "<":
         for i in range(len(list)-1):
-            if list[i][aoi] < str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) < (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == ">=":
         for i in range(len(list)-1):
-            if list[i][aoi] >= str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) >= (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == "<=":
         for i in range(len(list)-1):
-            if list[i][aoi] <= str(value):
+            if (str(list[i][aoi]) if not num else int(list[i][aoi])) <= (str(value) if not num else int(value)):
                 res.append(list[i])
 
     return res
@@ -142,7 +167,7 @@ def operator_handler(operator, list, aoi, value):
 def check_argument_rules(argument):
     for i in range(len(argument)):
         if argument[i] in cons.banned_characters:
-            print("Banned character found")
+            # print("Banned character found")
             return True
 
     return False
