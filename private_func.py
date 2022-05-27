@@ -132,6 +132,23 @@ def and_arg(db, doc, order, second, is_desc, res, get):
     return n_res
 
 
+def and_arg_no_order(db, doc, second, res, delete):
+    second_delete = delete("INDB " + db + " FROM " + doc + " WHERE " + second)
+    merged = res + second_delete
+    merged.sort()
+    # method for keeping only the multiples
+    n_res = []
+    aux = 0
+    aux2 = 0
+    for i in merged:
+        aux2 = i
+        if (aux2 == aux):
+            n_res.append(i)
+        aux = i
+
+    return n_res
+
+
 def operator_handler(operator, list, aoi, value):
     res = []
     num = value.isnumeric()
@@ -162,6 +179,35 @@ def operator_handler(operator, list, aoi, value):
                 res.append(list[i])
 
     return res
+
+
+def update_operator_handler(operator, ls, aoi, value, a_to_up, up_to):
+    num = value.isnumeric()
+    if operator == "==":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) == (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    elif operator == "!=":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) != (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    elif operator == ">=":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) >= (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    elif operator == ">":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) > (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    elif operator == "<=":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) <= (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    elif operator == "<":
+        for i in range(len(ls) - 1):
+            if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) < (str(value) if not num else int(value)):
+                ls[i][a_to_up] = up_to
+    return ls
 
 
 def check_argument_rules(argument):

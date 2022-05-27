@@ -193,10 +193,11 @@ def update(argument, test_run=False):
     # print(len(ls))
 
     # have to update for more operators
-    if operator == "==":
-        for i in range(len(ls) - 1):
-            if str(ls[i][aoi]) == str(value):
-                ls[i][a_to_up] = up_to
+    # if operator == "==":
+    #     for i in range(len(ls) - 1):
+    #         if str(ls[i][aoi]) == str(value):
+    #             ls[i][a_to_up] = up_to
+    ls = pf.update_operator_handler(operator, ls, aoi, value, a_to_up, up_to)
 
     # convert list to the unique string that the db uses
     data_back = pf.datafy_list(ls)
@@ -253,13 +254,18 @@ def delete(argument, test_run=False):
     # print(len(ls))
 
     values_to_delete = pf.operator_handler(operator, ls, aoi, value)
-
+    print(values_to_delete)
     # skip the elements that are the same
     res = []
 
     for i in range(len(ls)):
         if ls[i] not in values_to_delete:
             res.append(ls[i])
+
+    # print(res)
+    # if second != "":
+    #     n_res = pf.and_arg_no_order(db, doc, second, res, delete)
+    #     print(n_res)
 
     res = pf.datafy_list(res)
 

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # If you give True to the second parameter it just runs a test, if it can be added or not
     # You don't have to give second parameter
     # The input field doest like spaces so "Kis Cica" should be "KisCica" will fix it later
-    # doc.add("Cica Mica,18,Jojo INDB school INTO students", True)
+    # doc.add("Miau,42 INDB school INTO students")
     # doc.add("Cica,18 INDB school INTO students", True)
 
     # returns the results as a list in list
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
-    # doc.delete("WHERE name?==?Pablo INDB school FROM students")
+    # doc.delete("WHERE age?>=?18 INDB school FROM students")
 
     # example
     # names = ["FenellaBuxton", "AdnaanSquires", "VincenzoBlankenship", "CarloBaird", "MacPayne", "KomalGoodman"]
