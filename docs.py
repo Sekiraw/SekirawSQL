@@ -83,6 +83,8 @@ def add(argument, test_run=False):
 
 def get(argument):
     db, doc = pf.get_loc(argument)
+    # if "LIMIT" in argument:
+    #     limit = pf.limit(argument)
     if pf.check_argument_rules(argument):
         return cons.banned_error
     order = ""
@@ -130,6 +132,7 @@ def get(argument):
     res = pf.operator_handler(operator, ls, aoi, value)
 
     # second query if there is an AND in the argument
+    # it's ugly af, will fix it soon
     if second != "":
         n_res = pf.and_arg(db, doc, order, second, is_desc, res, get)
 
@@ -213,7 +216,7 @@ def update(argument, test_run=False):
     # print(data_back)
 
 
-def delete(argument, test_run=False):
+def delete(argument, test_run=False, recursion=False):
     db, doc = pf.get_loc(argument)
     if pf.check_argument_rules(argument):
         return cons.banned_error
@@ -254,10 +257,22 @@ def delete(argument, test_run=False):
     # print(len(ls))
 
     values_to_delete = pf.operator_handler(operator, ls, aoi, value)
-    print(values_to_delete)
+    if second != "":
+        val_second = delete("INDB " + db + " INTO " + doc + " WHERE " + second, test_run, True)
+        merged = values_to_delete + val_second
+        merged.sort()
+        n_res = []
+        aux = 0
+        aux2 = 0
+        for i in merged:
+            aux2 = i
+            if (aux2 == aux):
+                n_res.append(i)
+            aux = i
+
+        values_to_delete = n_res
     # skip the elements that are the same
     res = []
-
     for i in range(len(ls)):
         if ls[i] not in values_to_delete:
             res.append(ls[i])
@@ -268,13 +283,17 @@ def delete(argument, test_run=False):
     #     print(n_res)
 
     res = pf.datafy_list(res)
-
+    print(values_to_delete)
     if not test_run:
+        if recursion:
+            return values_to_delete
         f = open(cons.db_folder + "/" + db + "/" + doc + ".ini", "w")
         f.write(res)
         f.close()
         print("Deleted successfully!")
     else:
+        if recursion:
+            return values_to_delete
         print("No errors were found.")
         print("Test was successful!")
     # print(data_back)

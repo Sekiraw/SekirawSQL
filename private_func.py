@@ -61,6 +61,16 @@ def get_loc(arg):
         return db, doc
 
 
+def limit(argument):
+    # don't split it if it's not even in there
+    limit = 0
+    arg = argument.split(' ')
+    for i in range(len(arg)):
+        if arg[i] == "LIMIT":
+            limit = arg[i+1]
+    return limit
+
+
 def operator_reader(arg):
     arg = arg.split(" ")
     where = ""
@@ -119,6 +129,8 @@ def and_arg(db, doc, order, second, is_desc, res, get):
         second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
     merged = res + second_get
     merged.sort()
+    # if limit != -1:
+    #     merged = merged[1]
     # method for keeping only the multiples
     n_res = []
     aux = 0
