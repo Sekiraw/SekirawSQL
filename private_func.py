@@ -75,17 +75,20 @@ def operator_reader(arg):
     arg = arg.split(" ")
     where = ""
     andd = ""
+    only = ""
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
             where = arg[i+1]
         if "AND" in arg[i]:
             andd = arg[i+1]
+        if "ONLY" in arg[i]:
+            only = arg[i+1]
 
     if where == "":
         print("Error, operator was not found!")
         return
     else:
-        return where, andd
+        return where, andd, only
 
 
 def sort_operator_reader(argument):
@@ -95,7 +98,7 @@ def sort_operator_reader(argument):
     for i in range(len(arg)):
         if arg[i] == "ORDER" and arg[i+1] == "BY":
             parameter = arg[i+2]
-        if arg[-1] == "DESC":
+        if arg[i] == "DESC":
             desc = True
 
     return parameter, desc

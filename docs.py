@@ -88,7 +88,7 @@ def get(argument):
     if pf.check_argument_rules(argument):
         return cons.banned_error
     order = ""
-    op_res, second = pf.operator_reader(argument)
+    op_res, second, only = pf.operator_reader(argument)
     order, is_desc = pf.sort_operator_reader(argument)
     op_res = op_res.split("?")
     field = op_res[0]
@@ -105,9 +105,15 @@ def get(argument):
     rules = f.read()
     f.close()
     rules = rules.split(", ")
+
     aoi = -1
     aoi_order = -1 if order != "" else -2
+    only_aoi = -2
+    is_only = False
     for i in range(len(rules)):
+        if only != "" and str(only) in str(rules[i]):
+            only_aoi = i
+            is_only = True
         if str(field) in str(rules[i]):
             aoi = i
         if order != "":
@@ -117,8 +123,10 @@ def get(argument):
     # if aoi kept -1, that means there was no field in the rules that was given
     if aoi == -1:
         return "Field '" + str(field) + "' was not found in rules!"
-    elif aoi_order == -1:
+    if aoi_order == -1:
         return "Field '" + str(order) + "' was not found in rules!"
+    if only_aoi == -1:
+        return "Field '" + str(only) + "' was not found in rules!"
 
     # print(aoi)
     ls = []
@@ -139,7 +147,16 @@ def get(argument):
         if order != "":
             l = []
             res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
+            if is_only:
+                if only_aoi != -1:
+                    for i in range(len(res)):
+                        res[i] = res[i][only_aoi]
             return res
+        if is_only:
+            if only_aoi != -1:
+                for i in range(len(n_res)):
+                    print("in")
+                    n_res[i] = n_res[i][only_aoi]
         return n_res
     else:
         # if ORDER BY was found in the argument
@@ -283,7 +300,6 @@ def delete(argument, test_run=False, recursion=False):
     #     print(n_res)
 
     res = pf.datafy_list(res)
-    print(values_to_delete)
     if not test_run:
         if recursion:
             return values_to_delete

@@ -36,11 +36,13 @@ if __name__ == '__main__':
     # it doesn't work on strings like names etc...
     # print(doc.get("INDB school FROM students WHERE age?>=?18 ORDER BY age DESC"))
     # python handles the "order by string" query's, by the length and alphabetical order
-    print(doc.get("INDB school FROM students WHERE age?>=?18 AND age?<=?40 ORDER BY name DESC"))
+    # print(doc.get("INDB school FROM students WHERE age?>=?18 AND age?<=?40 ORDER BY name DESC"))
+    print(doc.get("INDB school FROM students WHERE age?>=?18 AND age?<=?40 ORDER BY age DESC ONLY name"))
 
     # doc.update("INDB school INTO students UPDATE name WHERE id?==?4 TO Mike")
 
     # doc.delete("WHERE age?>=?18 INDB school FROM students")
+    # doc.delete("INDB school FROM students WHERE age?>=18? AND name?!=?Brigi")
 
     # example
     # names = ["FenellaBuxton", "AdnaanSquires", "VincenzoBlankenship", "CarloBaird", "MacPayne", "KomalGoodman"]
