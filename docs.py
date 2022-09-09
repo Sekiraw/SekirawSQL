@@ -13,11 +13,14 @@ class Document():
         self._id = {}
         self._set_rules()
 
-    def get_id(self, table):
-        f = open(cons.db_folder + "/" + self._db + "/" + table + "_id.ini")
-        res = f.read()
-        f.close()
-        return res
+    def get_id(self, doc):
+        path = ''.join([cons.db_folder, self._db, '/', doc, '_id.ini'])
+        if os.path.exists(path):
+            f = open(path, 'r')
+            res = f.read()
+            f.close()
+            return res
+        return ''.join(["Document ", doc, "doesn't exists"])
 
     def set_database(self, db, tables):
         self._rules.clear()
@@ -31,46 +34,51 @@ class Document():
     def _set_rules(self):
         try:
             for i in self._tables:
-                f = open(cons.db_folder + "/" + self._db + "/" + i + "_rules.ini")
+                f = open(''.join([cons.db_folder, self._db, '/', i, '_rules.ini']), 'r')
                 self._rules[i] = f.read()
                 f.close()
-            for i in self._tables:
-                f = open(cons.db_folder + "/" + self._db + "/" + i + "_id.ini")
+
+                f = open(''.join([cons.db_folder, self._db, '/', i, '_id.ini']), 'r')
                 self._id[i] = f.read()
                 f.close()
-        except FileNotFoundError:
-            print("Table was not found!")
-            del self
+        except IOError as e:
+            print(e)
 
     def create_doc(self, argument, rules):
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        try:
-            f = open(cons.db_folder + self._db + "/" + doc + ".ini", "w")
-            f.write("")
-            f.close()
-            print("Document " + doc + " created successfully")
-            f = open(cons.db_folder + "/" + self._db + "/" + doc + "_id.ini", "w")
-            f.write(str(0))
-            f.close()
-            pf.create_doc_rules(self._db, doc, rules)
-        except FileExistsError:
-            print("Document " + doc + " already exists")
+        path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        if os.path.exists(path):
+            print(''.join(["Document ", doc, " already exists"]))
+            return
+
+        f = open(path, 'w')
+        f.write('')
+        f.close()
+
+        f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
+        f.write(str(0))
+        f.close()
+        pf.create_doc_rules(self._db, doc, rules)
+
+        print('Document created successfully')
 
     def delete_doc(self, argument):
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        if os.path.exists(cons.db_folder + self._db + "/" + doc + ".ini"):
-            os.remove(cons.db_folder + self._db + "/" + doc + ".ini")
-            os.remove(cons.db_folder + self._db + "/" + doc + "_id.ini")
-            os.remove(cons.db_folder + self._db + "/" + doc + "_rules.ini")
-            print("Document " + doc + " deleted successfully")
-        else:
-            print("The document does not exist")
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        if os.path.exists(doc_path):
+            os.remove(doc_path)
+            os.remove(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']))
+            os.remove(''.join([cons.db_folder, self._db, '/', doc, '_rules.ini']))
+            print(''.join(["Document ", doc, " deleted successfully"]))
+            return
+
+        print("The document does not exist")
 
     def add(self, argument, test_run=False):
         doc = pf.get_loc(argument, self._db)
@@ -89,10 +97,8 @@ class Document():
             if "int" in rules[i]:
                 if not data[i].isnumeric():
                     print("Inserted value doesn't match the rules")
-                    return "Inserted value doesn't match the rules"
                 if len(data) != len(rules):
-                    print("Given values doesn't match the rules" + "\nRules: " + str(rules))
-                    return "Given values doesn't match the rules" + "\nRules: " + str(rules)
+                    print(''.join(["Given values doesn't match the rules \nRules: ", str(rules)]))
         print("Rules match! Inserting data.")
 
         id = self._id[doc]
@@ -101,16 +107,15 @@ class Document():
         print(data)
 
         if not test_run:
-            f = open(cons.db_folder + "/" + self._db + "/" + doc + "_id.ini", "w")
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
             f.write(str(int(id) + 1))
             f.close()
 
-            f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "a+")
-            f.write(str(data) + ";")
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '.ini']), 'a+')
+            f.write(str(data) + ';')
             f.close()
         else:
             print("No errors were found. Test was successful!")
-            return "No errors were found. Test was successful!"
 
     def get(self, argument):
         doc = pf.get_loc(argument, self._db)
@@ -127,7 +132,7 @@ class Document():
         value = op_res[2]
 
         # open and read the doc
-        f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "r")
+        f = open(''.join([cons.db_folder, self._db, '/', doc, '.ini']), 'r')
         data = f.read().split(';')
         f.close()
         # print(op_res)
@@ -152,11 +157,11 @@ class Document():
 
         # if aoi kept -1, that means there was no field in the rules that was given
         if aoi == -1:
-            return "Field '" + str(field) + "' was not found in rules!"
+            return ''.join(["Field '", str(field), "' was not found in rules!"])
         if aoi_order == -1:
-            return "Field '" + str(order) + "' was not found in rules!"
+            return ''.join(["Field '", str(order), "' was not found in rules!"])
         if only_aoi == -1:
-            return "Field '" + str(only) + "' was not found in rules!"
+            return ''.join(["Field '", str(only), "' was not found in rules!"])
 
         # print(aoi)
         ls = []
@@ -207,7 +212,8 @@ class Document():
         operator = op_res[1]
         value = op_res[2]
 
-        f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "r")
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
         # print(op_res)
@@ -221,14 +227,14 @@ class Document():
                 aoi = i
 
         if aoi == -1:
-            return "Field '" + str(field) + "' was not found in rules!"
+            return ''.join(["Field '", str(field), "' was not found in rules!"])
 
         for i in range(len(rules)):
             if str(field_up_to) in str(rules[i]):
                 a_to_up = i
 
         if a_to_up == -1:
-            return "Field '" + str(field_up_to) + "' was not found in rules!"
+            return ''.join(["Field '", str(field_up_to), "' was not found in rules!"])
 
         # print(aoi)
         # print(a_to_up)
@@ -255,7 +261,7 @@ class Document():
             data_back = pf.datafy_list(ls)
             # print(data_back)
             if not test_run:
-                f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "w")
+                f = open(doc_path, 'w')
                 f.write(data_back)
                 f.close()
                 # print("Updated successfully!")
@@ -272,7 +278,7 @@ class Document():
         data_back = pf.datafy_list(ls)
         # print(data_back)
         if not test_run:
-            f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "w")
+            f = open(doc_path, 'w')
             f.write(data_back)
             f.close()
             print("Updated successfully!")
@@ -295,7 +301,8 @@ class Document():
             print("Operator not found.")
             return
 
-        f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "r")
+        doc_path =  ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
         # print(op_res)
@@ -307,7 +314,7 @@ class Document():
                 aoi = i
 
         if aoi == -1:
-            return "Field '" + str(field) + "' was not found in rules!"
+            return ''.join(["Field '", str(field), "' was not found in rules!"])
 
         # print(aoi)
         # print(a_to_up)
@@ -321,7 +328,7 @@ class Document():
 
         values_to_delete = pf.operator_handler(operator, ls, aoi, value)
         if second != "":
-            val_second = self.delete("INDB " + self._db + " INTO " + doc + " WHERE " + second, test_run, True)
+            val_second = self.delete(''.join(["INTO ", doc, " WHERE ", second]), test_run, True)
             merged = values_to_delete + val_second
             merged.sort()
             n_res = []
@@ -349,7 +356,7 @@ class Document():
         if not test_run:
             if recursion:
                 return values_to_delete
-            f = open(cons.db_folder + "/" + self._db + "/" + doc + ".ini", "w")
+            f = open(doc_path, 'w')
             f.write(res)
             f.close()
             print("Deleted successfully!")
@@ -364,4 +371,4 @@ class Document():
         try:
             print(self._rules[document])
         except KeyError:
-            print(f"{document} was not found in rules")
+            print(''.join([document, " was not found in rules"]))
