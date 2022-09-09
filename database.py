@@ -1,4 +1,5 @@
 import os
+from constants import db_folder
 
 
 def create_database(name):
@@ -6,23 +7,23 @@ def create_database(name):
         print("Can't create database with special characters")
         return 0
     name_string = name
-    name = "dbs/" + name
+    name = db_folder.join(name)
     try:
         os.mkdir(name)
-        print("Database " + name_string + " created")
+        print(''.join(["Database ", name_string, ' created successfully']))
     except FileExistsError:
-        print("Database ", + name_string + " already exist")
+        print(''.join(["Database ", name_string, ' already exists']))
 
 
 def delete_database(name):
     name_string = name
-    name = "dbs/" + name
+    name = db_folder.join(name)
     if not os.path.exists(name):
-        print("Database " + name_string + " does not exist")
+        print(''.join(["Database ", name_string, " doesn't exists"]))
     else:
         try:
             os.rmdir(name)
-            print("Database " + name_string + " deleted")
+            print(''.join(["Database ", name_string, ' deleted successfully']))
         except FileNotFoundError:
             print("Something went wrong")
 

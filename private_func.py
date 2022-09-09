@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def create_doc_rules(db, doc, rules):
-    f = open(cons.db_folder + db + "/" + doc + "_rules" + ".ini", "w")
+    f = open(''.join([cons.db_folder, db, '/', doc, '_rules.ini']), 'w')
     f.write(rules)
     f.close()
 
@@ -50,7 +50,7 @@ def get_loc(arg, db):
         return
 
     # check if file exists
-    location = Path(cons.db_folder + "/" + db + "/" + doc + ".ini")
+    location = Path(''.join([cons.db_folder, db, '/', doc, '.ini']))
     if location.exists():
         return doc
     else:
@@ -121,12 +121,13 @@ def unique_sorter(ls, aoi, res, rev=False):
 
 def and_arg(doc, order, second, is_desc, res, get):
     if order == "":
-        second_get = get("FROM " + doc + " WHERE " + second)
+        second_get = get(''.join(["FROM ", doc, " WHERE ", second]))
     else:
         desc = ""
         if is_desc:
             desc = " DESC"
-        second_get = get("FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
+        second_get = get(''.join(["FROM ", doc, " WHERE ", second, " ORDER BY ", order, desc]))
+
     merged = res + second_get
     merged.sort()
     # if limit != -1:
@@ -144,7 +145,7 @@ def and_arg(doc, order, second, is_desc, res, get):
 
 
 def and_arg_no_order(db, doc, second, res, delete):
-    second_delete = delete("FROM " + doc + " WHERE " + second)
+    second_delete = delete(''.join(["FROM ", doc, " WHERE ", second]))
     merged = res + second_delete
     merged.sort()
     # method for keeping only the multiples
@@ -197,7 +198,7 @@ def update_operator_handler(operator, ls, aoi, value, a_to_up, up_to):
     if operator == "==":
         for i in range(len(ls) - 1):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) == (str(value) if not num else int(value)):
-                print(ls[i][a_to_up])
+                # print(ls[i][a_to_up])
                 ls[i][a_to_up] = up_to
     elif operator == "!=":
         for i in range(len(ls) - 1):

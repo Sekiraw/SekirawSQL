@@ -3,11 +3,13 @@ from docs import Document
 
 if __name__ == '__main__':
     # new OOP way
-    db = Document("slot1", ['doors', 'ground_objects', 'player', 'weapon_inv', 'sad'])
-    # print(db.get(f"FROM ground_objects WHERE map?==?map2"))
+    db = Document("slot1", ['doors', 'ground_objects', 'player', 'weapon_inv'])
+
+    # print(db.get(f"FROM ground_objects WHERE map?==?map2 AND groundid?==?1"))
     # db.add("map7,1,300,10,3 INTO ground_objects")
-    # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?==?5 TO 700")
-    # db.delete("WHERE map?==?map54 FROM ground_objects")
+    # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?==?6 TO 100")
+    # db.delete("WHERE map?==?map9 FROM ground_objects")
+    # db.create_doc("CRDOC idk", 'id: int, a: string')
     # db.delete_doc("DLDOC idk")
 
     # db.create_database("school")
