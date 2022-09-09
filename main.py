@@ -1,10 +1,15 @@
-import random
-
-import database as db
-import docs as doc
+from docs import Document
 
 
 if __name__ == '__main__':
+    # new OOP way
+    db = Document("slot1", ['doors', 'ground_objects', 'player', 'weapon_inv', 'sad'])
+    # print(db.get(f"FROM ground_objects WHERE map?==?map2"))
+    # db.add("map7,1,300,10,3 INTO ground_objects")
+    # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?==?5 TO 700")
+    # db.delete("WHERE map?==?map54 FROM ground_objects")
+    # db.delete_doc("DLDOC idk")
+
     # db.create_database("school")
     # db.delete_database("asd")
 
@@ -26,7 +31,7 @@ if __name__ == '__main__':
 
     # returns the results as a list in list
     # the operators should be in between two questionmarks like >= should be ?>=?
-    print(doc.get("INDB school FROM teachers WHERE age?>?21 AND name?==?Brigi"))
+    # print(doc.get("INDB school FROM teachers WHERE age?>?21 AND name?==?Brigi"))
     # print(doc.get("INDB school FROM students WHERE id?==?4"))
     # AND operator can be used more than once
     # print(doc.get("INDB school FROM students WHERE age?>=?18 AND id?>?3"))
