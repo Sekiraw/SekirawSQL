@@ -33,13 +33,10 @@ def datafy_list(list):
 
 
 # finds and returns the location of the given database and document
-def get_loc(arg):
-    db = ""
+def get_loc(arg, db):
     doc = ""
     arg = arg.split(' ')
     for i in range(len(arg)):
-        if "INDB" in arg[i]:
-            db = str(arg[i + 1])
         if "INTO" in arg[i]:
             doc = str(arg[i + 1])
         if "CRDOC" in arg[i]:
@@ -48,17 +45,17 @@ def get_loc(arg):
             doc = str(arg[i + 1])
         if "FROM" in arg[i]:
             doc = str(arg[i + 1])
-    if doc == "" or db == "":
+    if doc == "":
         print("Something went wrong")
         return
 
     # check if file exists
     location = Path(cons.db_folder + "/" + db + "/" + doc + ".ini")
     if location.exists():
-        return db, doc
+        return doc
     else:
         print("Cannot find document.")
-        return db, doc
+        return doc
 
 
 def limit(argument):
@@ -122,14 +119,14 @@ def unique_sorter(ls, aoi, res, rev=False):
     return unique_sorter(ls, aoi, res, rev)
 
 
-def and_arg(db, doc, order, second, is_desc, res, get):
+def and_arg(doc, order, second, is_desc, res, get):
     if order == "":
-        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second)
+        second_get = get("FROM " + doc + " WHERE " + second)
     else:
         desc = ""
         if is_desc:
             desc = " DESC"
-        second_get = get("INDB " + db + " FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
+        second_get = get("FROM " + doc + " WHERE " + second + " ORDER BY " + order + desc)
     merged = res + second_get
     merged.sort()
     # if limit != -1:
@@ -143,12 +140,11 @@ def and_arg(db, doc, order, second, is_desc, res, get):
         if (aux2 == aux):
             n_res.append(i)
         aux = i
-
     return n_res
 
 
 def and_arg_no_order(db, doc, second, res, delete):
-    second_delete = delete("INDB " + db + " FROM " + doc + " WHERE " + second)
+    second_delete = delete("FROM " + doc + " WHERE " + second)
     merged = res + second_delete
     merged.sort()
     # method for keeping only the multiples
@@ -201,6 +197,7 @@ def update_operator_handler(operator, ls, aoi, value, a_to_up, up_to):
     if operator == "==":
         for i in range(len(ls) - 1):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) == (str(value) if not num else int(value)):
+                print(ls[i][a_to_up])
                 ls[i][a_to_up] = up_to
     elif operator == "!=":
         for i in range(len(ls) - 1):
