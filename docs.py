@@ -16,6 +16,12 @@ class Document():
     def get_database(self):
         return self._db
 
+    def get_tables(self):
+        return self._tables
+
+    def get_ids(self):
+        return self._id
+
     def get_id(self, doc):
         path = ''.join([cons.db_folder, self._db, '/', doc, '_id.ini'])
         if os.path.exists(path):
@@ -48,6 +54,7 @@ class Document():
             print(e)
 
     def create_doc(self, argument, rules):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
@@ -57,18 +64,26 @@ class Document():
             print(''.join(["Document ", doc, " already exists"]))
             return
 
-        f = open(path, 'w')
-        f.write('')
-        f.close()
+        try:
+            f = open(path, 'w')
+            f.write('')
+            f.close()
 
-        f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
-        f.write(str(0))
-        f.close()
-        pf.create_doc_rules(self._db, doc, rules)
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
+            f.write(str(0))
+            f.close()
+
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_rules.ini']), 'w')
+            f.write('id: int, ' + rules)
+            f.close()
+        except IOError as e:
+            print(e)
+            return
 
         print('Document created successfully')
 
     def delete_doc(self, argument):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
@@ -86,6 +101,7 @@ class Document():
         print("Document does not exist")
 
     def add(self, argument, test_run=False):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
@@ -123,6 +139,7 @@ class Document():
             print("No errors were found. Test was successful!")
 
     def get(self, argument):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         # if "LIMIT" in argument:
         #     limit = pf.limit(argument)
@@ -205,6 +222,7 @@ class Document():
             return res
 
     def update(self, argument, test_run=False):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
@@ -293,6 +311,7 @@ class Document():
         # print(data_back)
 
     def delete(self, argument, test_run=False, recursion=False):
+        argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
