@@ -2,21 +2,14 @@ import constants as cons
 from pathlib import Path
 
 
-def create_doc_rules(db, doc, rules):
-    f = open(''.join([cons.db_folder, db, '/', doc, '_rules.ini']), 'w')
-    f.write(rules)
-    f.close()
-
-
-def update_to(arg):
-    arg = arg.split(" ")
+def update_to(argument):
     up_to = ""
     field_up_to = ""
-    for i in range(len(arg)):
-        if arg[i] == "TO":
-            up_to = arg[i+1]
-        if arg[i] == "UPDATE":
-            field_up_to = arg[i+1]
+    for i in range(len(argument)):
+        if argument[i] == "TO":
+            up_to = argument[i+1]
+        if argument[i] == "UPDATE":
+            field_up_to = argument[i+1]
 
     return up_to, field_up_to
 
@@ -35,18 +28,17 @@ def datafy_list(list):
 # finds and returns the location of the given database and document
 def get_loc(arg, db):
     doc = ""
-    arg = arg.split(' ')
     for i in range(len(arg)):
         if "INTO" in arg[i]:
             doc = str(arg[i + 1])
-        if "CRDOC" in arg[i]:
+        elif "CRDOC" in arg[i]:
             doc = str(arg[i + 1])
-        if "DLDOC" in arg[i]:
+        elif "DLDOC" in arg[i]:
             doc = str(arg[i + 1])
-        if "FROM" in arg[i]:
+        elif "FROM" in arg[i]:
             doc = str(arg[i + 1])
     if doc == "":
-        print("Something went wrong")
+        print("Something went wrong, argument is not valid")
         return
 
     # check if file exists
@@ -61,15 +53,13 @@ def get_loc(arg, db):
 def limit(argument):
     # don't split it if it's not even in there
     limit = 0
-    arg = argument.split(' ')
-    for i in range(len(arg)):
-        if arg[i] == "LIMIT":
-            limit = arg[i+1]
+    for i in range(len(argument)):
+        if argument[i] == "LIMIT":
+            limit = argument[i+1]
     return limit
 
 
 def operator_reader(arg):
-    arg = arg.split(" ")
     where = ""
     andd = ""
     only = ""
@@ -91,11 +81,10 @@ def operator_reader(arg):
 def sort_operator_reader(argument):
     parameter = ""
     desc = False
-    arg = argument.split(" ")
-    for i in range(len(arg)):
-        if arg[i] == "ORDER" and arg[i+1] == "BY":
-            parameter = arg[i+2]
-        if arg[i] == "DESC":
+    for i in range(len(argument)):
+        if argument[i] == "ORDER" and argument[i+1] == "BY":
+            parameter = argument[i+2]
+        if argument[i] == "DESC":
             desc = True
 
     return parameter, desc
