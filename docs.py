@@ -13,6 +13,9 @@ class Document():
         self._id = {}
         self._set_rules()
 
+    def get_database(self):
+        return self._db
+
     def get_id(self, doc):
         path = ''.join([cons.db_folder, self._db, '/', doc, '_id.ini'])
         if os.path.exists(path):
@@ -71,14 +74,16 @@ class Document():
             return cons.banned_error
 
         doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
-        if os.path.exists(doc_path):
+        try:
             os.remove(doc_path)
             os.remove(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']))
             os.remove(''.join([cons.db_folder, self._db, '/', doc, '_rules.ini']))
             print(''.join(["Document ", doc, " deleted successfully"]))
             return
+        except IOError as e:
+            print(e)
 
-        print("The document does not exist")
+        print("Document does not exist")
 
     def add(self, argument, test_run=False):
         doc = pf.get_loc(argument, self._db)
