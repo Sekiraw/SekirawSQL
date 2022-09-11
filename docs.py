@@ -105,14 +105,13 @@ class Document():
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
-        arg = argument.split(" ")
         # check the rules first
         rules = self._rules[doc]
         rules = rules.replace(" ", "")
         rules = rules.split(",")
         rules.pop(0)
 
-        data = arg[0].split(",")
+        data = argument[0].split(",")
 
         for i in range(len(rules)):
             if "int" in rules[i]:
@@ -123,6 +122,7 @@ class Document():
         print("Rules match! Inserting data.")
 
         id = self._id[doc]
+        self._id[doc] = int(self._id[doc]) + 1
         data.insert(0, int(id) + 1)
         data = str(data).replace("'", "")
         print(data)
@@ -325,7 +325,7 @@ class Document():
             print("Operator not found.")
             return
 
-        doc_path =  ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        doc_path =''.join([cons.db_folder, self._db, '/', doc, '.ini'])
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
