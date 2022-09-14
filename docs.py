@@ -148,7 +148,7 @@ class Document():
         order = ""
         op_res, second, only = pf.operator_reader(argument)
         order, is_desc = pf.sort_operator_reader(argument)
-        op_res = op_res.split("?")
+        op_res = op_res.split('?')
         field = op_res[0]
         operator = op_res[1]
         value = op_res[2]
@@ -190,36 +190,70 @@ class Document():
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
-
+        ls.pop(-1)
         # print(ls)
         # print(len(ls))
 
         res = pf.operator_handler(operator, ls, aoi, value)
 
-        # second query if there is an AND in the argument
-        # it's ugly af, will fix it soon
-        if second != "":
-            n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
+        if len(second) > 0:
+            result = []
+            for i in second:
+                i = i.split('?')
+                sec_field = i[0]
+                sec_operator = i[1]
+                sec_value = i[2]
+                sec_aoi = -1
 
-            if order != "":
-                l = []
-                res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
-                if is_only:
-                    if only_aoi != -1:
-                        for i in range(len(res)):
-                            res[i] = res[i][only_aoi]
-                return res
+                for i in range(len(rules)):
+                    if str(sec_field) in str(rules[i]):
+                        sec_aoi = i
+
+                quer = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
+                res = quer
+            for i in res:
+                result.append(i)
+            res = result
+
+        if order != "":
+            l = []
+            res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
             if is_only:
                 if only_aoi != -1:
-                    for i in range(len(n_res)):
-                        n_res[i] = n_res[i][only_aoi]
-            return n_res
-        else:
-            # if ORDER BY was found in the argument
-            if order != "":
-                l = []
-                res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
-            return res
+                    for i in range(len(res)):
+                        res[i] = res[i][only_aoi]
+
+        if is_only:
+            if only_aoi != -1:
+                for i in range(len(res)):
+                    res[i] = res[i][only_aoi]
+
+        return res
+
+        # second query if there is an AND in the argument
+        # it's ugly af, will fix it soon
+        # if second != "":
+        #     n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
+        #
+        #     if order != "":
+        #         l = []
+        #         res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
+        #         if is_only:
+        #             if only_aoi != -1:
+        #                 for i in range(len(res)):
+        #                     res[i] = res[i][only_aoi]
+        #         return res
+        #     if is_only:
+        #         if only_aoi != -1:
+        #             for i in range(len(n_res)):
+        #                 n_res[i] = n_res[i][only_aoi]
+        #     return n_res
+        # else:
+        #     # if ORDER BY was found in the argument
+        #     if order != "":
+        #         l = []
+        #         res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
+        #     return res
 
     def update(self, argument, test_run=False):
         argument = argument.split(' ')
