@@ -157,8 +157,7 @@ class Document():
         f = open(''.join([cons.db_folder, self._db, '/', doc, '.ini']), 'r')
         data = f.read().split(';')
         f.close()
-        # print(op_res)
-        # open and read the rules
+        # set the rules
         rules = self._rules[doc]
 
         rules = rules.split(", ")
@@ -185,14 +184,11 @@ class Document():
         if only_aoi == -1:
             return ''.join(["Field '", str(only), "' was not found in rules!"])
 
-        # print(aoi)
         ls = []
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
         ls.pop(-1)
-        # print(ls)
-        # print(len(ls))
 
         res = pf.operator_handler(operator, ls, aoi, value)
 
