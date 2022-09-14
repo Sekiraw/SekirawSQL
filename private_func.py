@@ -61,13 +61,13 @@ def limit(argument):
 
 def operator_reader(arg):
     where = ""
-    andd = ""
+    andd = []
     only = ""
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
             where = arg[i+1]
         if "AND" in arg[i]:
-            andd = arg[i+1]
+            andd.append(arg[i+1])
         if "ONLY" in arg[i]:
             only = arg[i+1]
 
@@ -154,28 +154,27 @@ def operator_handler(operator, list, aoi, value):
     res = []
     num = value.isnumeric()
     if operator == "==":
-        for i in range(len(list) - 1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) == (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == "!=":
-        for i in range(len(list)-1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) != (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == ">":
-        for i in range(len(list)-1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) > (str(value) if not num else int(value)):
-                # print(list[i][aoi], ">", value)
                 res.append(list[i])
     elif operator == "<":
-        for i in range(len(list)-1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) < (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == ">=":
-        for i in range(len(list)-1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) >= (str(value) if not num else int(value)):
                 res.append(list[i])
     elif operator == "<=":
-        for i in range(len(list)-1):
+        for i in range(len(list)):
             if (str(list[i][aoi]) if not num else int(list[i][aoi])) <= (str(value) if not num else int(value)):
                 res.append(list[i])
 
@@ -185,28 +184,28 @@ def operator_handler(operator, list, aoi, value):
 def update_operator_handler(operator, ls, aoi, value, a_to_up, up_to):
     num = value.isnumeric()
     if operator == "==":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) == (str(value) if not num else int(value)):
                 # print(ls[i][a_to_up])
                 ls[i][a_to_up] = up_to
     elif operator == "!=":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) != (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
     elif operator == ">=":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) >= (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
     elif operator == ">":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) > (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
     elif operator == "<=":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) <= (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
     elif operator == "<":
-        for i in range(len(ls) - 1):
+        for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) < (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
     return ls
