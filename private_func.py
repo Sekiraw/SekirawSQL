@@ -3,8 +3,7 @@ from pathlib import Path
 
 
 def update_to(argument):
-    up_to = ""
-    field_up_to = ""
+    up_to, field_up_to = '', ''
     for i in range(len(argument)):
         if argument[i] == "TO":
             up_to = argument[i+1]
@@ -43,7 +42,7 @@ def get_loc(arg, db):
         return
 
     # check if file exists
-    location = Path(''.join([cons.db_folder, db, '/', doc, '.ini']))
+    location = Path(''.join([cons.db_folder, db, '/', doc, cons.file_extension]))
     if location.exists():
         return doc
     else:
@@ -61,9 +60,8 @@ def limit(argument):
 
 
 def operator_reader(arg):
-    where = ""
+    where, only = '', ''
     andd = []
-    only = ""
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
             where = arg[i+1]
@@ -109,42 +107,17 @@ def unique_sorter(ls, aoi, res, rev=False):
     return unique_sorter(ls, aoi, res, rev)
 
 
-def and_arg(doc, order, second, is_desc, res, get):
-    if order == "":
-        second_get = get(''.join(["FROM ", doc, " WHERE ", second]))
-    else:
-        desc = ""
-        if is_desc:
-            desc = " DESC"
-        second_get = get(''.join(["FROM ", doc, " WHERE ", second, " ORDER BY ", order, desc]))
-
-    merged = res + second_get
-    merged.sort()
-    # if limit != -1:
-    #     merged = merged[1]
-    # method for keeping only the multiples
-    n_res = []
-    aux = 0
-    aux2 = 0
-    for i in merged:
-        aux2 = i
-        if (aux2 == aux):
-            n_res.append(i)
-        aux = i
-    return n_res
-
-
-def and_arg_no_order(db, doc, second, res, delete):
+# keep it for maybe later uses
+def and_arg_no_order(doc, second, res, delete):
     second_delete = delete(''.join(["FROM ", doc, " WHERE ", second]))
     merged = res + second_delete
     merged.sort()
     # method for keeping only the multiples
     n_res = []
-    aux = 0
-    aux2 = 0
+    aux, aux2 = 0, 0
     for i in merged:
         aux2 = i
-        if (aux2 == aux):
+        if aux2 == aux:
             n_res.append(i)
         aux = i
 
