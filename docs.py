@@ -205,8 +205,8 @@ class Document():
                     if str(sec_field) in str(rules[i]):
                         sec_aoi = i
 
-                quer = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
-                res = quer
+                res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
+
             for i in res:
                 result.append(i)
             res = result
@@ -226,31 +226,6 @@ class Document():
 
         return res
 
-        # second query if there is an AND in the argument
-        # it's ugly af, will fix it soon
-        # if second != "":
-        #     n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
-        #
-        #     if order != "":
-        #         l = []
-        #         res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
-        #         if is_only:
-        #             if only_aoi != -1:
-        #                 for i in range(len(res)):
-        #                     res[i] = res[i][only_aoi]
-        #         return res
-        #     if is_only:
-        #         if only_aoi != -1:
-        #             for i in range(len(n_res)):
-        #                 n_res[i] = n_res[i][only_aoi]
-        #     return n_res
-        # else:
-        #     # if ORDER BY was found in the argument
-        #     if order != "":
-        #         l = []
-        #         res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
-        #     return res
-
     def update(self, argument, test_run=False):
         argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
@@ -258,8 +233,7 @@ class Document():
             return cons.banned_error
 
         op_res, second, _ = pf.operator_reader(argument)
-        order, is_desc = pf.sort_operator_reader(argument)
-        op_res = op_res.split("?")
+        op_res = op_res.split('?')
         up_to, field_up_to = pf.update_to(argument)
         field = op_res[0]
         operator = op_res[1]
@@ -269,7 +243,7 @@ class Document():
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
-        # print(op_res)
+
         rules = self._rules[doc]
         rules = rules.split(", ")
 
@@ -289,58 +263,58 @@ class Document():
         if a_to_up == -1:
             return ''.join(["Field '", str(field_up_to), "' was not found in rules!"])
 
-        # print(aoi)
-        # print(a_to_up)
         ls = []
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
-        # print(len(ls))
+        ls.pop(-1)
 
-        # custom part [LATER]
-        if second != "":
-            res = pf.operator_handler(operator, ls, aoi, value)
-            n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
-            # print(n_res)
-            index = 0
-            keep = n_res[0]
-            for item, i in enumerate(ls):
-                if i == keep:
-                    index = item
-            modified = n_res[0]
-            modified[a_to_up] = up_to
-            ls[index] = modified
+        res = pf.operator_handler(operator, ls, aoi, value)
 
-            data_back = pf.datafy_list(ls)
-            # print(data_back)
-            if not test_run:
-                f = open(doc_path, 'w')
-                f.write(data_back)
-                f.close()
-                # print("Updated successfully!")
-            else:
-                print("No errors were found.")
-                print("Test was successful!")
-            return
+        if len(second) > 0:
+            result = []
+            for i in second:
+                i = i.split('?')
+                sec_field = i[0]
+                sec_operator = i[1]
+                sec_value = i[2]
+                sec_aoi = -1
 
-        ls = pf.update_operator_handler(operator, ls, aoi, value, a_to_up, up_to)
+                for i in range(len(rules)):
+                    if str(sec_field) in str(rules[i]):
+                        sec_aoi = i
 
-        print(ls)
+                # overwriting the res to restrict the list as the restrictions require
+                res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
-        # convert list to the unique string that the db uses
-        data_back = pf.datafy_list(ls)
-        # print(data_back)
+            for i in res:
+                result.append(i)
+
+            operator_result_list, updated_indexes = pf.update_operator_handler(operator, result, aoi, value, a_to_up, up_to)
+
+            # we've got the indexes of the updated elements from the operator handler,
+            # so if i[0]-th element is in the index list (index list holds the ids of the updatde elements),
+            # because it's in order, we overwrite ls[i] to the operator result list's [0]-th element
+            # and dereference it from the op_res_list, so we can still follow the order
+            # it is a faster solution than going through ls and op_r_l as i and j
+            for i in ls:
+                if i[0] in updated_indexes:
+                    i = operator_result_list[0]
+                    del operator_result_list[0]
+
+        else:
+            # if there is no AND statement, we don't have to restrict the list
+            ls, _ = pf.update_operator_handler(operator, ls, aoi, value, a_to_up, up_to)
+
         if not test_run:
             f = open(doc_path, 'w')
-            f.write(data_back)
+            f.write(pf.datafy_list(ls))
             f.close()
-            print("Updated successfully!")
+            # print("Updated successfully!")
         else:
-            print("No errors were found.")
             print("Test was successful!")
-        # print(data_back)
 
-    def delete(self, argument, test_run=False, recursion=False):
+    def delete(self, argument, test_run=False):
         argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
@@ -355,7 +329,7 @@ class Document():
             print("Operator not found.")
             return
 
-        doc_path =''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
@@ -376,48 +350,38 @@ class Document():
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
-
-        # print(ls)
-        # print(len(ls))
+        ls.pop(-1)
 
         values_to_delete = pf.operator_handler(operator, ls, aoi, value)
-        if second != "":
-            val_second = self.delete(''.join(["INTO ", doc, " WHERE ", second]), test_run, True)
-            merged = values_to_delete + val_second
-            merged.sort()
-            n_res = []
-            aux = 0
-            aux2 = 0
-            for i in merged:
-                aux2 = i
-                if (aux2 == aux):
-                    n_res.append(i)
-                aux = i
 
-            values_to_delete = n_res
-        # skip the elements that are the same
-        res = []
-        for i in range(len(ls)):
-            if ls[i] not in values_to_delete:
-                res.append(ls[i])
+        result = []
+        if len(second) > 0:
+            for i in second:
+                i = i.split('?')
+                sec_field = i[0]
+                sec_operator = i[1]
+                sec_value = i[2]
+                sec_aoi = -1
 
-        # print(res)
-        # if second != "":
-        #     n_res = pf.and_arg_no_order(db, doc, second, res, delete)
-        #     print(n_res)
+                for i in range(len(rules)):
+                    if str(sec_field) in str(rules[i]):
+                        sec_aoi = i
 
-        res = pf.datafy_list(res)
+                values_to_delete = pf.operator_handler(sec_operator, values_to_delete, sec_aoi, sec_value)
+
+            for i in values_to_delete:
+                result.append(i)
+            values_to_delete = result
+
+        for i in values_to_delete:
+            ls.remove(i)
+
         if not test_run:
-            if recursion:
-                return values_to_delete
             f = open(doc_path, 'w')
-            f.write(res)
+            f.write(pf.datafy_list(ls))
             f.close()
             print("Deleted successfully!")
         else:
-            if recursion:
-                return values_to_delete
-            print("No errors were found.")
             print("Test was successful!")
         # print(data_back)
 

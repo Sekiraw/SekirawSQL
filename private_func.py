@@ -22,6 +22,7 @@ def datafy_list(list):
     string = str(string).replace("; ", ";")
     string = string[1:]
     string = string[:-1]
+    string = string + ';'
     return string
 
 
@@ -183,32 +184,40 @@ def operator_handler(operator, list, aoi, value):
 
 def update_operator_handler(operator, ls, aoi, value, a_to_up, up_to):
     num = value.isnumeric()
+    # keep track of the updated indexes
+    indexes = []
     if operator == "==":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) == (str(value) if not num else int(value)):
                 # print(ls[i][a_to_up])
                 ls[i][a_to_up] = up_to
+                indexes.append(ls[i][0])
     elif operator == "!=":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) != (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
+                indexes.append(ls[i][0])
     elif operator == ">=":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) >= (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
+                indexes.append(ls[i][0])
     elif operator == ">":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) > (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
+                indexes.append(ls[i][0])
     elif operator == "<=":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) <= (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
+                indexes.append(ls[i][0])
     elif operator == "<":
         for i in range(len(ls)):
             if (str(ls[i][aoi]) if not num else int(ls[i][aoi])) < (str(value) if not num else int(value)):
                 ls[i][a_to_up] = up_to
-    return ls
+                indexes.append(ls[i][0])
+    return ls, indexes
 
 
 def check_argument_rules(argument):
