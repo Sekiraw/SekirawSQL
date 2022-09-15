@@ -1,10 +1,10 @@
-import os
+from os import path, remove
 
 import constants as cons
 import private_func as pf
 
 
-class Document():
+class Document:
     def __init__(self, db, tables):
         self._db = db
         self._tables = tables
@@ -23,9 +23,9 @@ class Document():
         return self._id
 
     def get_id(self, doc):
-        path = ''.join([cons.db_folder, self._db, '/', doc, '_id.ini'])
-        if os.path.exists(path):
-            f = open(path, 'r')
+        path_to_file = ''.join([cons.db_folder, self._db, '/', doc, '_id', cons.file_extension])
+        if path.exists(path_to_file):
+            f = open(path_to_file, 'r')
             res = f.read()
             f.close()
             return res
@@ -43,11 +43,11 @@ class Document():
     def _set_rules(self):
         try:
             for i in self._tables:
-                f = open(''.join([cons.db_folder, self._db, '/', i, '_rules.ini']), 'r')
+                f = open(''.join([cons.db_folder, self._db, '/', i, '_rules', cons.file_extension]), 'r')
                 self._rules[i] = f.read()
                 f.close()
 
-                f = open(''.join([cons.db_folder, self._db, '/', i, '_id.ini']), 'r')
+                f = open(''.join([cons.db_folder, self._db, '/', i, '_id', cons.file_extension]), 'r')
                 self._id[i] = f.read()
                 f.close()
         except IOError as e:
@@ -59,21 +59,21 @@ class Document():
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
-        if os.path.exists(path):
+        path_to_file = ''.join([cons.db_folder, self._db, '/', doc, cons.file_extension])
+        if path.exists(path_to_file):
             print(''.join(["Document ", doc, " already exists"]))
             return
 
         try:
-            f = open(path, 'w')
+            f = open(path_to_file, 'w')
             f.write('')
             f.close()
 
-            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id', cons.file_extension]), 'w')
             f.write(str(0))
             f.close()
 
-            f = open(''.join([cons.db_folder, self._db, '/', doc, '_rules.ini']), 'w')
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_rules', cons.file_extension]), 'w')
             f.write('id: int, ' + rules)
             f.close()
         except IOError as e:
@@ -88,11 +88,11 @@ class Document():
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, cons.file_extension])
         try:
-            os.remove(doc_path)
-            os.remove(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']))
-            os.remove(''.join([cons.db_folder, self._db, '/', doc, '_rules.ini']))
+            remove(doc_path)
+            remove(''.join([cons.db_folder, self._db, '/', doc, '_id', cons.file_extension]))
+            remove(''.join([cons.db_folder, self._db, '/', doc, '_rules', cons.file_extension]))
             print(''.join(["Document ", doc, " deleted successfully"]))
             return
         except IOError as e:
@@ -106,7 +106,7 @@ class Document():
         if pf.check_argument_rules(argument):
             return cons.banned_error
         # check the rules first
-        rules = self._rules[doc]
+        rules, identifier = self._rules[doc], self._id[doc]
         rules = rules.replace(" ", "")
         rules = rules.split(",")
         rules.pop(0)
@@ -121,18 +121,18 @@ class Document():
                     print(''.join(["Given values doesn't match the rules \nRules: ", str(rules)]))
         print("Rules match! Inserting data.")
 
-        id = self._id[doc]
         self._id[doc] = int(self._id[doc]) + 1
-        data.insert(0, int(id) + 1)
+        data.insert(0, int(identifier) + 1)
         data = str(data).replace("'", "")
-        print(data)
 
         if not test_run:
-            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id.ini']), 'w')
-            f.write(str(int(id) + 1))
+            print(data)
+
+            f = open(''.join([cons.db_folder, self._db, '/', doc, '_id', cons.file_extension]), 'w')
+            f.write(str(int(identifier) + 1))
             f.close()
 
-            f = open(''.join([cons.db_folder, self._db, '/', doc, '.ini']), 'a+')
+            f = open(''.join([cons.db_folder, self._db, '/', doc, cons.file_extension]), 'a+')
             f.write(str(data) + ';')
             f.close()
         else:
@@ -145,16 +145,13 @@ class Document():
         #     limit = pf.limit(argument)
         if pf.check_argument_rules(argument):
             return cons.banned_error
-        order = ""
         op_res, second, only = pf.operator_reader(argument)
         order, is_desc = pf.sort_operator_reader(argument)
         op_res = op_res.split('?')
-        field = op_res[0]
-        operator = op_res[1]
-        value = op_res[2]
+        field, operator, value = op_res[0], op_res[1], op_res[2]
 
         # open and read the doc
-        f = open(''.join([cons.db_folder, self._db, '/', doc, '.ini']), 'r')
+        f = open(''.join([cons.db_folder, self._db, '/', doc, cons.file_extension]), 'r')
         data = f.read().split(';')
         f.close()
         # set the rules
@@ -162,10 +159,9 @@ class Document():
 
         rules = rules.split(", ")
 
-        aoi = -1
+        aoi, only_aoi, is_only = -1, -2, False
         aoi_order = -1 if order != "" else -2
-        only_aoi = -2
-        is_only = False
+
         for i in range(len(rules)):
             if only != "" and str(only) in str(rules[i]):
                 only_aoi = i
@@ -193,27 +189,19 @@ class Document():
         res = pf.operator_handler(operator, ls, aoi, value)
 
         if len(second) > 0:
-            result = []
             for i in second:
                 i = i.split('?')
-                sec_field = i[0]
-                sec_operator = i[1]
-                sec_value = i[2]
-                sec_aoi = -1
+                sec_field, sec_operator, sec_value, sec_aoi = i[0], i[1], i[2], -1
 
-                for i in range(len(rules)):
-                    if str(sec_field) in str(rules[i]):
-                        sec_aoi = i
+                for j in range(len(rules)):
+                    if str(sec_field) in str(rules[j]):
+                        sec_aoi = j
 
-                quer = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
-                res = quer
-            for i in res:
-                result.append(i)
-            res = result
+                res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
         if order != "":
-            l = []
-            res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
+            empty_list = []
+            res = pf.unique_sorter(res, aoi_order, empty_list, is_desc if is_desc else False)
             if is_only:
                 if only_aoi != -1:
                     for i in range(len(res)):
@@ -226,31 +214,6 @@ class Document():
 
         return res
 
-        # second query if there is an AND in the argument
-        # it's ugly af, will fix it soon
-        # if second != "":
-        #     n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
-        #
-        #     if order != "":
-        #         l = []
-        #         res = pf.unique_sorter(n_res, aoi_order, l, is_desc if is_desc else False)
-        #         if is_only:
-        #             if only_aoi != -1:
-        #                 for i in range(len(res)):
-        #                     res[i] = res[i][only_aoi]
-        #         return res
-        #     if is_only:
-        #         if only_aoi != -1:
-        #             for i in range(len(n_res)):
-        #                 n_res[i] = n_res[i][only_aoi]
-        #     return n_res
-        # else:
-        #     # if ORDER BY was found in the argument
-        #     if order != "":
-        #         l = []
-        #         res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
-        #     return res
-
     def update(self, argument, test_run=False):
         argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
@@ -258,23 +221,19 @@ class Document():
             return cons.banned_error
 
         op_res, second, _ = pf.operator_reader(argument)
-        order, is_desc = pf.sort_operator_reader(argument)
-        op_res = op_res.split("?")
+        op_res = op_res.split('?')
         up_to, field_up_to = pf.update_to(argument)
-        field = op_res[0]
-        operator = op_res[1]
-        value = op_res[2]
+        field, operator, value = op_res[0], op_res[1], op_res[2]
 
-        doc_path = ''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, cons.file_extension])
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
-        # print(op_res)
+
         rules = self._rules[doc]
         rules = rules.split(", ")
 
-        aoi = -1
-        a_to_up = -1
+        aoi, a_to_up = -1
         for i in range(len(rules)):
             if str(field) in str(rules[i]):
                 aoi = i
@@ -289,77 +248,70 @@ class Document():
         if a_to_up == -1:
             return ''.join(["Field '", str(field_up_to), "' was not found in rules!"])
 
-        # print(aoi)
-        # print(a_to_up)
         ls = []
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
-        # print(len(ls))
+        ls.pop(-1)
 
-        # custom part [LATER]
-        if second != "":
-            res = pf.operator_handler(operator, ls, aoi, value)
-            n_res = pf.and_arg(doc, order, second, is_desc, res, self.get)
-            # print(n_res)
-            index = 0
-            keep = n_res[0]
-            for item, i in enumerate(ls):
-                if i == keep:
-                    index = item
-            modified = n_res[0]
-            modified[a_to_up] = up_to
-            ls[index] = modified
+        res = pf.operator_handler(operator, ls, aoi, value)
 
-            data_back = pf.datafy_list(ls)
-            # print(data_back)
-            if not test_run:
-                f = open(doc_path, 'w')
-                f.write(data_back)
-                f.close()
-                # print("Updated successfully!")
-            else:
-                print("No errors were found.")
-                print("Test was successful!")
-            return
+        if len(second) > 0:
+            for i in second:
+                i = i.split('?')
+                sec_field, sec_operator, sec_value, sec_aoi = i[0], i[1], i[2], -1
 
-        ls = pf.update_operator_handler(operator, ls, aoi, value, a_to_up, up_to)
+                for j in range(len(rules)):
+                    if str(sec_field) in str(rules[j]):
+                        sec_aoi = j
 
-        print(ls)
+                # overwriting the res to restrict the list as the restrictions require
+                res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
-        # convert list to the unique string that the db uses
-        data_back = pf.datafy_list(ls)
-        # print(data_back)
+            operator_result_list, updated_indexes = pf.update_operator_handler(operator, res, aoi, value, a_to_up,
+                                                                               up_to)
+
+            # we've got the indexes of the updated elements from the operator handler,
+            # so if i[0]-th element is in the index list (index list holds the ids of the updatde elements),
+            # because it's in order, we overwrite ls[i] to the operator result list's [0]-th element
+            # and dereference it from the op_res_list, so we can still follow the order
+            # it is a faster solution than going through ls and op_r_l as i and j
+            for obj in ls:
+                if obj[0] in updated_indexes:
+                    obj = operator_result_list[0]
+                    del operator_result_list[0]
+
+        else:
+            # if there is no AND statement, we don't have to restrict the list
+            ls, _ = pf.update_operator_handler(operator, ls, aoi, value, a_to_up, up_to)
+
         if not test_run:
             f = open(doc_path, 'w')
-            f.write(data_back)
+            f.write(pf.datafy_list(ls))
             f.close()
-            print("Updated successfully!")
+            # print("Updated successfully!")
         else:
-            print("No errors were found.")
             print("Test was successful!")
-        # print(data_back)
 
-    def delete(self, argument, test_run=False, recursion=False):
+    def delete(self, argument, test_run=False):
         argument = argument.split(' ')
         doc = pf.get_loc(argument, self._db)
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        op_res, second, only = pf.operator_reader(argument)
+        op_res, second, _ = pf.operator_reader(argument)
         op_res = op_res.split("?")
-        field = op_res[0]
-        operator = op_res[1]
-        value = op_res[2]
+        field, operator, value = op_res[0], op_res[1], op_res[2]
+
         if field == "" or operator == "" or value == "":
             print("Operator not found.")
             return
 
-        doc_path =''.join([cons.db_folder, self._db, '/', doc, '.ini'])
+        doc_path = ''.join([cons.db_folder, self._db, '/', doc, cons.file_extension])
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
-        # print(op_res)
+
         rules = self._rules[doc]
         rules = rules.split(", ")
         aoi = -1
@@ -370,56 +322,35 @@ class Document():
         if aoi == -1:
             return ''.join(["Field '", str(field), "' was not found in rules!"])
 
-        # print(aoi)
-        # print(a_to_up)
         ls = []
         # convert the string lists into lists
         for i in range(len(data)):
             ls.append(data[i].strip('][').split(', '))
-
-        # print(ls)
-        # print(len(ls))
+        ls.pop(-1)
 
         values_to_delete = pf.operator_handler(operator, ls, aoi, value)
-        if second != "":
-            val_second = self.delete(''.join(["INTO ", doc, " WHERE ", second]), test_run, True)
-            merged = values_to_delete + val_second
-            merged.sort()
-            n_res = []
-            aux = 0
-            aux2 = 0
-            for i in merged:
-                aux2 = i
-                if (aux2 == aux):
-                    n_res.append(i)
-                aux = i
 
-            values_to_delete = n_res
-        # skip the elements that are the same
-        res = []
-        for i in range(len(ls)):
-            if ls[i] not in values_to_delete:
-                res.append(ls[i])
+        if len(second) > 0:
+            for i in second:
+                i = i.split('?')
+                sec_field, sec_operator, sec_value, sec_aoi = i[0], i[1], i[2], -1
 
-        # print(res)
-        # if second != "":
-        #     n_res = pf.and_arg_no_order(db, doc, second, res, delete)
-        #     print(n_res)
+                for j in range(len(rules)):
+                    if str(sec_field) in str(rules[j]):
+                        sec_aoi = j
 
-        res = pf.datafy_list(res)
+                values_to_delete = pf.operator_handler(sec_operator, values_to_delete, sec_aoi, sec_value)
+
+        for i in values_to_delete:
+            ls.remove(i)
+
         if not test_run:
-            if recursion:
-                return values_to_delete
             f = open(doc_path, 'w')
-            f.write(res)
+            f.write(pf.datafy_list(ls))
             f.close()
             print("Deleted successfully!")
         else:
-            if recursion:
-                return values_to_delete
-            print("No errors were found.")
             print("Test was successful!")
-        # print(data_back)
 
     def get_rules(self, document):
         try:

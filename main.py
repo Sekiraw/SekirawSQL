@@ -6,11 +6,12 @@ if __name__ == '__main__':
     db = Document("slot1", ['doors', 'ground_objects', 'player', 'weapon_inv'])
 
     # print(db.get_database())
-    print(db.get(f"FROM ground_objects WHERE map?==?map2 AND groundid?>=?1 AND ispickedup?==?70 AND groundid?!=?2 ORDER BY groundid DESC"))
+    print(db.get(f"FROM ground_objects WHERE map?==?map2 AND groundid?>=?1 AND ispickedup?==?70 AND groundid?!=?2 "
+                 f"ORDER BY groundid DESC"))
     # db.add("map7,1,300,10,22 INTO ground_objects")
-    # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?==?6 TO 666")
+    # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?>?4 AND type?!=?bkh TO 7")
     # db.update(f"INTO weapon_inv UPDATE isequiped WHERE customid?==?7 TO 222")
-    # db.delete("WHERE map?==?map9 FROM ground_objects")
+    # db.delete("WHERE map?==?map20 FROM ground_objects")
     # db.create_doc("CRDOC idk", 'a: string')
     # db.delete_doc("DLDOC idk")
 
@@ -70,5 +71,3 @@ if __name__ == '__main__':
     # doc.update(f"INDB slot1 INTO ground_objects UPDATE ispickedup WHERE itemid?==?201 TO 70")
 
     # doc.update(f"INDB slot1 INTO weapon_inv UPDATE slotindex WHERE customid?==?5 TO 0")
-
-
