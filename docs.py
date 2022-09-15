@@ -261,9 +261,9 @@ class Document:
                 i = i.split('?')
                 sec_field, sec_operator, sec_value, sec_aoi = i[0], i[1], i[2], -1
 
-                for i in range(len(rules)):
-                    if str(sec_field) in str(rules[i]):
-                        sec_aoi = i
+                for j in range(len(rules)):
+                    if str(sec_field) in str(rules[j]):
+                        sec_aoi = j
 
                 # overwriting the res to restrict the list as the restrictions require
                 res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
