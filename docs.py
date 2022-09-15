@@ -200,8 +200,8 @@ class Document:
                 res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
         if order != "":
-            l = []
-            res = pf.unique_sorter(res, aoi_order, l, is_desc if is_desc else False)
+            empty_list = []
+            res = pf.unique_sorter(res, aoi_order, empty_list, is_desc if is_desc else False)
             if is_only:
                 if only_aoi != -1:
                     for i in range(len(res)):
@@ -268,16 +268,17 @@ class Document:
                 # overwriting the res to restrict the list as the restrictions require
                 res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
-            operator_result_list, updated_indexes = pf.update_operator_handler(operator, res, aoi, value, a_to_up, up_to)
+            operator_result_list, updated_indexes = pf.update_operator_handler(operator, res, aoi, value, a_to_up,
+                                                                               up_to)
 
             # we've got the indexes of the updated elements from the operator handler,
             # so if i[0]-th element is in the index list (index list holds the ids of the updatde elements),
             # because it's in order, we overwrite ls[i] to the operator result list's [0]-th element
             # and dereference it from the op_res_list, so we can still follow the order
             # it is a faster solution than going through ls and op_r_l as i and j
-            for i in ls:
-                if i[0] in updated_indexes:
-                    i = operator_result_list[0]
+            for obj in ls:
+                if obj[0] in updated_indexes:
+                    obj = operator_result_list[0]
                     del operator_result_list[0]
 
         else:
@@ -310,7 +311,7 @@ class Document:
         f = open(doc_path, 'r')
         data = f.read().split(';')
         f.close()
-        # print(op_res)
+
         rules = self._rules[doc]
         rules = rules.split(", ")
         aoi = -1
@@ -334,9 +335,9 @@ class Document:
                 i = i.split('?')
                 sec_field, sec_operator, sec_value, sec_aoi = i[0], i[1], i[2], -1
 
-                for i in range(len(rules)):
-                    if str(sec_field) in str(rules[i]):
-                        sec_aoi = i
+                for j in range(len(rules)):
+                    if str(sec_field) in str(rules[j]):
+                        sec_aoi = j
 
                 values_to_delete = pf.operator_handler(sec_operator, values_to_delete, sec_aoi, sec_value)
 
