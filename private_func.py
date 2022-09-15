@@ -14,8 +14,8 @@ def update_to(argument):
 
 
 # convert the list to the unique system that the database uses
-def datafy_list(list):
-    string = str(list).replace("'", "")
+def datafy_list(input_list):
+    string = str(input_list).replace("'", "")
     string = str(string).replace("[]", "")
     string = str(string).replace("],", "];")
     string = str(string).replace("; ", ";")
@@ -52,11 +52,11 @@ def get_loc(arg, db):
 
 def limit(argument):
     # don't split it if it's not even in there
-    limit = 0
+    limit_count = 0
     for i in range(len(argument)):
         if argument[i] == "LIMIT":
-            limit = argument[i+1]
-    return limit
+            limit_count = argument[i+1]
+    return limit_count
 
 
 def operator_reader(arg):
@@ -97,13 +97,13 @@ def unique_sorter(ls, aoi, res, rev=False):
             return res
         return res
 
-    min = ls[-1]
+    min_in_list = ls[-1]
     for i in range(len(ls)):
-        if ls[i][aoi] < min[aoi]:
-            min = ls[i]
+        if ls[i][aoi] < min_in_list[aoi]:
+            min_in_list = ls[i]
 
-    res.append(min)
-    ls.remove(min)
+    res.append(min_in_list)
+    ls.remove(min_in_list)
     return unique_sorter(ls, aoi, res, rev)
 
 
@@ -124,33 +124,33 @@ def and_arg_no_order(doc, second, res, delete):
     return n_res
 
 
-def operator_handler(operator, list, aoi, value):
+def operator_handler(operator, i_list, aoi, value):
     res = []
     num = value.isnumeric()
     if operator == "==":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) == (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) == (str(value) if not num else int(value)):
+                res.append(i_list[i])
     elif operator == "!=":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) != (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) != (str(value) if not num else int(value)):
+                res.append(i_list[i])
     elif operator == ">":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) > (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) > (str(value) if not num else int(value)):
+                res.append(i_list[i])
     elif operator == "<":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) < (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) < (str(value) if not num else int(value)):
+                res.append(i_list[i])
     elif operator == ">=":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) >= (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) >= (str(value) if not num else int(value)):
+                res.append(i_list[i])
     elif operator == "<=":
-        for i in range(len(list)):
-            if (str(list[i][aoi]) if not num else int(list[i][aoi])) <= (str(value) if not num else int(value)):
-                res.append(list[i])
+        for i in range(len(i_list)):
+            if (str(i_list[i][aoi]) if not num else int(i_list[i][aoi])) <= (str(value) if not num else int(value)):
+                res.append(i_list[i])
 
     return res
 
