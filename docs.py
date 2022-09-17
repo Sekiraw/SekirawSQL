@@ -180,10 +180,8 @@ class Document:
         if only_aoi == -1:
             return ''.join(["Field '", str(only), "' was not found in rules!"])
 
-        ls = []
         # convert the string lists into lists
-        for i in range(len(data)):
-            ls.append(data[i].strip('][').split(', '))
+        ls = [row.strip('][').split(', ') for row in data]
         ls.pop(-1)
 
         res = pf.operator_handler(operator, ls, aoi, value)
@@ -248,10 +246,8 @@ class Document:
         if a_to_up == -1:
             return ''.join(["Field '", str(field_up_to), "' was not found in rules!"])
 
-        ls = []
         # convert the string lists into lists
-        for i in range(len(data)):
-            ls.append(data[i].strip('][').split(', '))
+        ls = [row.strip('][').split(', ') for row in data]
         ls.pop(-1)
 
         res = pf.operator_handler(operator, ls, aoi, value)
@@ -322,10 +318,8 @@ class Document:
         if aoi == -1:
             return ''.join(["Field '", str(field), "' was not found in rules!"])
 
-        ls = []
         # convert the string lists into lists
-        for i in range(len(data)):
-            ls.append(data[i].strip('][').split(', '))
+        ls = [row.strip('][').split(', ') for row in data]
         ls.pop(-1)
 
         values_to_delete = pf.operator_handler(operator, ls, aoi, value)
