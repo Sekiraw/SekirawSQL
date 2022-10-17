@@ -6,8 +6,7 @@ if __name__ == '__main__':
     db = Document("slot1", ['doors', 'ground_objects', 'player', 'weapon_inv'])
 
     # print(db.get_database())
-    print(db.get(f"FROM ground_objects WHERE map?==?map2 AND groundid?>=?1 AND ispickedup?==?70 AND groundid?!=?2 "
-                 f"ORDER BY groundid DESC"))
+    print(db.get(f"FROM ground_objects WHERE map?==?map2 ORDER BY ispickedup"))
     # db.add("map7,1,300,10,22 INTO ground_objects")
     # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?>?4 AND type?!=?bkh TO 7")
     # db.update(f"INTO weapon_inv UPDATE isequiped WHERE customid?==?7 TO 222")

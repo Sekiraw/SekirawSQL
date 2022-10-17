@@ -198,8 +198,7 @@ class Document:
                 res = pf.operator_handler(sec_operator, res, sec_aoi, sec_value)
 
         if order != "":
-            empty_list = []
-            res = pf.unique_sorter(res, aoi_order, empty_list, is_desc if is_desc else False)
+            res = pf.unique_sorter(res, aoi_order, is_desc)
             if is_only:
                 if only_aoi != -1:
                     for i in range(len(res)):
