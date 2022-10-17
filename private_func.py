@@ -89,22 +89,8 @@ def sort_operator_reader(argument):
     return parameter, desc
 
 
-# had to make it recursive, sorry memory
-def unique_sorter(ls, aoi, res, rev=False):
-    if len(ls) == 0:
-        if rev:
-            res.reverse()
-            return res
-        return res
-
-    min_in_list = ls[-1]
-    for i in range(len(ls)):
-        if ls[i][aoi] < min_in_list[aoi]:
-            min_in_list = ls[i]
-
-    res.append(min_in_list)
-    ls.remove(min_in_list)
-    return unique_sorter(ls, aoi, res, rev)
+def unique_sorter(ls, aoi, rev):
+    return sorted(ls, key=lambda x: x[aoi], reverse=rev)
 
 
 # keep it for maybe later uses
