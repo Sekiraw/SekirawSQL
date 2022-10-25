@@ -145,7 +145,15 @@ class Document:
         #     limit = pf.limit(argument)
         if pf.check_argument_rules(argument):
             return cons.banned_error
-        op_res, second, only = pf.operator_reader(argument)
+        op_res, second, only, return_early = pf.operator_reader(argument)
+        if return_early:
+            f = open(''.join([cons.db_folder, self._db, '/', doc, cons.file_extension]), 'r')
+            data_er = f.read().split(';')
+            f.close()
+            ls_er = [row.strip('][').split(', ') for row in data_er]
+            ls_er.pop(-1)
+            return ls_er
+
         order, is_desc = pf.sort_operator_reader(argument)
         op_res = op_res.split('?')
         field, operator, value = op_res[0], op_res[1], op_res[2]
@@ -217,7 +225,7 @@ class Document:
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        op_res, second, _ = pf.operator_reader(argument)
+        op_res, second, _, _ = pf.operator_reader(argument)
         op_res = op_res.split('?')
         up_to, field_up_to = pf.update_to(argument)
         field, operator, value = op_res[0], op_res[1], op_res[2]
@@ -230,7 +238,7 @@ class Document:
         rules = self._rules[doc]
         rules = rules.split(", ")
 
-        aoi, a_to_up = -1
+        aoi, a_to_up = -1, -1
         for i in range(len(rules)):
             if str(field) in str(rules[i]):
                 aoi = i
@@ -294,7 +302,7 @@ class Document:
         if pf.check_argument_rules(argument):
             return cons.banned_error
 
-        op_res, second, _ = pf.operator_reader(argument)
+        op_res, second, _, _ = pf.operator_reader(argument)
         op_res = op_res.split("?")
         field, operator, value = op_res[0], op_res[1], op_res[2]
 

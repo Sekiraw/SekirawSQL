@@ -60,7 +60,7 @@ def limit(argument):
 
 
 def operator_reader(arg):
-    where, only = '', ''
+    where, only, select_all = '', '', False
     andd = []
     for i in range(len(arg)):
         if "WHERE" in arg[i]:
@@ -69,12 +69,15 @@ def operator_reader(arg):
             andd.append(arg[i+1])
         if "ONLY" in arg[i]:
             only = arg[i+1]
+        if "SELECTALL" in arg[i]:
+            select_all = True
 
-    if where == "":
+    if where == "" and not select_all:
         print("Error, operator was not found!")
         return
     else:
-        return where, andd, only
+        return where, andd, only, select_all
+
 
 
 def sort_operator_reader(argument):
