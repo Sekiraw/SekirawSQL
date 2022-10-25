@@ -7,6 +7,7 @@ if __name__ == '__main__':
 
     # print(db.get_database())
     print(db.get(f"FROM ground_objects WHERE map?==?map2 ORDER BY ispickedup"))
+    print(db.get(f"FROM ground_objects SELECTALL"))
     # db.add("map7,1,300,10,22 INTO ground_objects")
     # db.update("INTO weapon_inv UPDATE slotindex WHERE customid?>?4 AND type?!=?bkh TO 7")
     # db.update(f"INTO weapon_inv UPDATE isequiped WHERE customid?==?7 TO 222")
